@@ -21,7 +21,7 @@ public class EdktDeklaracje {
     private BigDecimal dklStatus;
 
     @Column(name = "DKL_TDL_KOD") // Pit11
-    private BigDecimal dklTdlKod;
+    private String dklTdlKod;
 
     @Column(name = "DKL_PRC_ID")
     private BigDecimal dklPrcId;
@@ -57,11 +57,11 @@ public class EdktDeklaracje {
         this.dklStatus = dklStatus;
     }
 
-    public BigDecimal getDklTdlKod() {
+    public String getDklTdlKod() {
         return dklTdlKod;
     }
 
-    public void setDklTdlKod(BigDecimal dklTdlKod) {
+    public void setDklTdlKod(String dklTdlKod) {
         this.dklTdlKod = dklTdlKod;
     }
 

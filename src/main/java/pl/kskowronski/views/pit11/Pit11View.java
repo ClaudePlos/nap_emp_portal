@@ -1,12 +1,10 @@
 package pl.kskowronski.views.pit11;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,19 +39,23 @@ public class Pit11View extends HorizontalLayout {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<User> worker = userService.findByPassword(userDetails.getPassword());
 
-        Optional<EdktDeklaracje> dek = edktDeklaracjeService.findByDklId(BigDecimal.valueOf(686L));
-        System.out.println(dek.get().getDklXmlVisual());
-        generatDateInGrid(dek.get());
-//        Optional<List<EdktDeklaracje>> listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId());
-//        listEDeklaracje.get().stream().forEach( item -> {
-//            generatDateInGrid(item);
-//        });
-
+        //Optional<EdktDeklaracje> dek = edktDeklaracjeService.findByDklId(BigDecimal.valueOf(686L));
+        //System.out.println(dek.get().getDklId());
+        //generatDateInGrid(dek.get());
 
         setId("pit11-view");
 
         grid = new Grid<>(EdktDeklaracje.class);
-        grid.setColumns("firstName", "lastName", "email", "phone", "dateOfBirth", "occupation");
+        grid.setColumns("dklId", "dklTdlKod", "dklPrcId", "dklDataOd", "dklDataDo", "dklXmlVisual", "dklFrmId");
+        //grid.setDataProvider(dataProvider);
+        //grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+        //rid.setHeightFull();
+
+        Optional<List<EdktDeklaracje>> listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId());
+//        listEDeklaracje.get().stream().forEach( item -> {
+//            generatDateInGrid(item);
+//        });
+        grid.setItems(listEDeklaracje.get());
 
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
@@ -62,7 +64,7 @@ public class Pit11View extends HorizontalLayout {
 
         add(splitLayout);
 
-
+        refreshGrid();
     }
 
     private void generatDateInGrid(EdktDeklaracje item){
@@ -76,6 +78,11 @@ public class Pit11View extends HorizontalLayout {
         wrapper.setWidthFull();
         splitLayout.addToPrimary(wrapper);
         wrapper.add(grid);
+    }
+
+    private void refreshGrid() {
+        grid.select(null);
+        grid.getDataProvider().refreshAll();
     }
 }
 

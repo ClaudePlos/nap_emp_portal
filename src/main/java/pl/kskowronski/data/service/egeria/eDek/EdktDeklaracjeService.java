@@ -25,9 +25,13 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
     }
 
     public Optional<EdktDeklaracje> findByDklId(BigDecimal dklId){
+        repo.setConsolidate();
         return repo.findByDklId(dklId);
     };
 
-    public Optional<List<EdktDeklaracje>> findAllByDklPrcId(BigDecimal prcId){ return repo.findAllByDklPrcId(prcId);};
+    public Optional<List<EdktDeklaracje>> findAllByDklPrcId(BigDecimal prcId){
+        repo.setConsolidate();
+        return repo.findAllByDklPrcId(prcId);
+    };
 
 }
