@@ -26,4 +26,6 @@ public class UserService extends CrudService<User, BigDecimal> {
         return repo.findById(prcId);
     }
 
+    public Optional<User> findByPassword(String pesel){ return repo.findByPassword(pesel);};
+
 }

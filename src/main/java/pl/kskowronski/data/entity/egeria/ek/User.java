@@ -23,6 +23,12 @@ public class User {
     @Column(name = "PRC_PESEL")
     private String password;
 
+    @Column(name = "PRC_IMIE")
+    private String prcImie;
+
+    @Column(name = "PRC_NAZWISKO")
+    private String prcNazwisko;
+
     public User() {
     }
 
@@ -56,5 +62,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPrcImie() {
+        return prcImie;
+    }
+
+    public void setPrcImie(String prcImie) {
+        this.prcImie = prcImie;
+    }
+
+    public String getPrcNazwisko() {
+        return prcNazwisko;
+    }
+
+    public void setPrcNazwisko(String prcNazwisko) {
+        this.prcNazwisko = prcNazwisko;
     }
 }

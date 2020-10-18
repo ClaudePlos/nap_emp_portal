@@ -1,6 +1,7 @@
 package pl.kskowronski.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +38,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
 
-                .anyRequest().authenticated()
+                .anyRequest().authenticated() //to daje ze jak nie ma autoryzacja to strona logowania
 
                 .and().formLogin()
                 .loginPage(LOGIN_URL).permitAll()
                 .loginProcessingUrl(LOGIN_PROCESSING_URL)
                 .failureUrl(LOGIN_FAILURE_URL)
-                .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL);
+                .and()
+                .logout().invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl(LOGOUT_SUCCESS_URL);
     }
 
 

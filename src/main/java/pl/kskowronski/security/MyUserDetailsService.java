@@ -1,5 +1,6 @@
 package pl.kskowronski.security;
 
+import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +25,6 @@ public class MyUserDetailsService implements UserDetailsService
         if (user.get() == null) {
             throw new UsernameNotFoundException("Could not find user with that email");
         }
-
         return new MyUserDetails(user.get());
     }
 

@@ -11,6 +11,7 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -19,11 +20,8 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.theme.Theme;
-import pl.kskowronski.views.main.MainView;
 import pl.kskowronski.views.mainpage.MainPageView;
-import pl.kskowronski.views.helloworld.HelloWorldView;
+import pl.kskowronski.views.absences.AllAboutAbsencesView;
 import pl.kskowronski.views.cardlist.CardListView;
 import pl.kskowronski.views.masterdetail.MasterDetailView;
 import pl.kskowronski.views.about.AboutView;
@@ -40,6 +38,8 @@ public class MainView extends AppLayout {
     private H1 viewTitle;
 
     public MainView() {
+        //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //System.out.println(userDetails.getUsername());
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
@@ -58,6 +58,14 @@ public class MainView extends AppLayout {
         layout.add(viewTitle);
 
         Anchor logout = new Anchor("/logout","Log out");
+        NativeButton buttonLogOut = new NativeButton(
+                "LogOut");
+//        buttonLogOut.addClickListener(e ->
+//                buttonLogOut.getUI().ifPresent(ui ->
+//                        ui.navigate("logout"))
+//        );
+
+
 
         layout.add(new Image("images/user.svg", "Avatar"), logout);
         return layout;
@@ -74,7 +82,7 @@ public class MainView extends AppLayout {
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         logoLayout.add(new Image("images/logo.png", "nap_emp_portal logo"));
-        logoLayout.add(new H1("nap_emp_portal"));
+        logoLayout.add(new H1("Portal"));
         layout.add(logoLayout, menu);
         return layout;
     }
@@ -91,7 +99,7 @@ public class MainView extends AppLayout {
     private Component[] createMenuItems() {
         return new Tab[] {
             createTab("Main Page", MainPageView.class),
-            createTab("Hello World", HelloWorldView.class),
+            createTab("Twój urlop", AllAboutAbsencesView.class),
             createTab("Card List", CardListView.class),
             createTab("Master-Detail", MasterDetailView.class),
             createTab("Pit11", Pit11View.class),

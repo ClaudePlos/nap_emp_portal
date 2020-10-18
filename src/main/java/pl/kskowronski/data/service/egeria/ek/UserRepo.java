@@ -12,4 +12,6 @@ public interface UserRepo extends JpaRepository<User, BigDecimal> {
 
     Optional<User> findByUsername(String username);
 
+    Optional<User> findByPassword(String pesel);
+
 }
