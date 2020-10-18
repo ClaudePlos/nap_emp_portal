@@ -3,26 +3,26 @@ package pl.kskowronski.data.service.egeria.ek;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
-import pl.kskowronski.data.entity.egeria.ek.PracownikVo;
+import pl.kskowronski.data.entity.egeria.ek.User;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
-public class PracownikVoService extends CrudService<PracownikVo, BigDecimal> {
+public class UserService extends CrudService<User, BigDecimal> {
 
-    private PracownikVoRepo repo;
+    private UserRepo repo;
 
-    public PracownikVoService(@Autowired PracownikVoRepo repo) {
+    public UserService(@Autowired UserRepo repo) {
         this.repo = repo;
     }
 
     @Override
-    protected PracownikVoRepo getRepository() {
+    protected UserRepo getRepository() {
         return repo;
     }
 
-    public Optional<PracownikVo> findById(BigDecimal prcId){
+    public Optional<User> findById(BigDecimal prcId){
         return repo.findById(prcId);
     }
 

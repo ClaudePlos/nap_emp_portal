@@ -23,6 +23,13 @@ public final class SecurityUtils {
 
     static boolean isUserLoggedIn() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        //Get the username of the logged in user: getPrincipal()
+        //Get the password of the authenticated user: getCredentials()
+        //Get the assigned roles of the authenticated user: getAuthorities()
+        //Get further details of the authenticated user: getDetails()
+        System.out.println(authentication.getName());
+
         return authentication != null
                 && !(authentication instanceof AnonymousAuthenticationToken)
                 && authentication.isAuthenticated();

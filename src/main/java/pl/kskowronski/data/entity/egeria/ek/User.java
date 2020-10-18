@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "EK_PRACOWNICY")
-public class PracownikVo {
+public class User {
 
     @Id
     @Column(name = "PRC_ID")
@@ -17,10 +17,13 @@ public class PracownikVo {
     @Column(name = "PRC_NUMER")
     private BigDecimal prcNumer;
 
-    @Column(name = "PRC_PESEL")
-    private String prcPesel;
+    @Column(name = "PRC_DOWOD_OSOB")
+    private String username;
 
-    public PracownikVo() {
+    @Column(name = "PRC_PESEL")
+    private String password;
+
+    public User() {
     }
 
     public BigDecimal getPrcId() {
@@ -39,11 +42,19 @@ public class PracownikVo {
         this.prcNumer = prcNumer;
     }
 
-    public String getPrcPesel() {
-        return prcPesel;
+    public String getUsername() {
+        return username;
     }
 
-    public void setPrcPesel(String prcPesel) {
-        this.prcPesel = prcPesel;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
