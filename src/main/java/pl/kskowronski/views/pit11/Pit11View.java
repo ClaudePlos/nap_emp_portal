@@ -1,5 +1,6 @@
 package pl.kskowronski.views.pit11;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
@@ -7,6 +8,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,10 +16,12 @@ import org.vaadin.artur.helpers.CrudServiceDataProvider;
 import pl.kskowronski.data.entity.Person;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracje;
 import pl.kskowronski.data.entity.egeria.ek.User;
+import pl.kskowronski.data.reaports.Pit11Service;
 import pl.kskowronski.data.service.egeria.eDek.EdktDeklaracjeService;
 import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.views.main.MainView;
 
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +34,10 @@ public class Pit11View extends HorizontalLayout {
 
     private UserService userService;
     private EdktDeklaracjeService edktDeklaracjeService;
+
+
+    @Autowired
+    Pit11Service pit11Service;
 
     public Pit11View(@Autowired UserService userService, @Autowired EdktDeklaracjeService edktDeklaracjeService) {
 
@@ -77,7 +85,21 @@ public class Pit11View extends HorizontalLayout {
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
         splitLayout.addToPrimary(wrapper);
-        wrapper.add(grid);
+        Button btnTestReport = new Button("TestReport", event -> {
+            String repReturn = null;
+            try {
+                repReturn = pit11Service.exportPit11Report("pdf");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (JRException e) {
+                e.printStackTrace();
+            }
+            System.out.println(repReturn);
+        });
+        wrapper.add(grid, btnTestReport);
+
+
+
     }
 
     private void refreshGrid() {
