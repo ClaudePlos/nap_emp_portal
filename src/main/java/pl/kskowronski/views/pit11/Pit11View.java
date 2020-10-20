@@ -1,20 +1,20 @@
 package pl.kskowronski.views.pit11;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.frontend.installer.DefaultFileDownloader;
 import net.sf.jasperreports.engine.JRException;
+import org.apache.catalina.webresources.FileResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.vaadin.artur.helpers.CrudServiceDataProvider;
-import pl.kskowronski.data.entity.Person;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracje;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.reaports.Pit11Service;
@@ -22,14 +22,16 @@ import pl.kskowronski.data.service.egeria.eDek.EdktDeklaracjeService;
 import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.views.main.MainView;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Route(value = "Pit11", layout = MainView.class)
 @PageTitle("Pit11")
@@ -81,7 +83,8 @@ public class Pit11View extends HorizontalLayout {
         grid.addColumn(new NativeButtonRenderer<EdktDeklaracje>("Pit11",
                 item -> {
                     try {
-                        pit11Service.exportPit11Report("pdf", worker.get().getPassword(), dtYYYY.format(item.getDklDataOd()),  item.getDklXmlVisual());
+                        String path = pit11Service.exportPit11Report("pdf", worker.get().getPassword(), dtYYYY.format(item.getDklDataOd()),  item.getDklXmlVisual());
+                        displayPitPDFonBrowser(path);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (JRException e) {
@@ -104,6 +107,12 @@ public class Pit11View extends HorizontalLayout {
         grid.setItems(item);
     }
 
+    private void displayPitPDFonBrowser(String path) throws FileNotFoundException {
+        //UI.getCurrent().getPage().executeJavaScript("window.open('"+ path + "','_blank')");
+
+        StreamResource resource = new StreamResource(path, (out, session) -> System.out.println(out.toString()));
+        new Anchor(resource, "Download!");
+    }
 
     private void createGridLayout(SplitLayout splitLayout) {
         Div wrapper = new Div();
