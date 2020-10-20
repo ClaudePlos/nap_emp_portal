@@ -9,6 +9,7 @@ import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracje;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecimal> {

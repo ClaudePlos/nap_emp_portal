@@ -6,6 +6,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import net.sf.jasperreports.engine.JRException;
@@ -23,8 +24,12 @@ import pl.kskowronski.views.main.MainView;
 
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Route(value = "Pit11", layout = MainView.class)
 @PageTitle("Pit11")
@@ -38,6 +43,9 @@ public class Pit11View extends HorizontalLayout {
 
     @Autowired
     Pit11Service pit11Service;
+
+    SimpleDateFormat dtYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat dtYYYY = new SimpleDateFormat("yyyy");
 
     public Pit11View(@Autowired UserService userService, @Autowired EdktDeklaracjeService edktDeklaracjeService) {
 
@@ -55,15 +63,32 @@ public class Pit11View extends HorizontalLayout {
 
         grid = new Grid<>(EdktDeklaracje.class);
         grid.setColumns("dklId", "dklTdlKod", "dklPrcId", "dklDataOd", "dklDataDo", "dklXmlVisual", "dklFrmId");
+
+
         //grid.setDataProvider(dataProvider);
         //grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         //rid.setHeightFull();
 
-        Optional<List<EdktDeklaracje>> listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId());
-//        listEDeklaracje.get().stream().forEach( item -> {
-//            generatDateInGrid(item);
-//        });
-        grid.setItems(listEDeklaracje.get());
+        List<EdktDeklaracje> listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId())
+                .get().stream()
+                .filter( i -> i.getDklStatus().equals(BigDecimal.valueOf(50L))) // status have UPO
+                .sorted(Comparator.comparing(EdktDeklaracje::getDklDataOd).reversed())
+                .collect(Collectors.toList());
+        //System.out.println(listEDeklaracje.size());
+        grid.setItems(listEDeklaracje);
+
+        // run generate pit pdf
+        grid.addColumn(new NativeButtonRenderer<EdktDeklaracje>("Pit11",
+                item -> {
+                    try {
+                        pit11Service.exportPit11Report("pdf", worker.get().getPassword(), dtYYYY.format(item.getDklDataOd()),  item.getDklXmlVisual());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (JRException e) {
+                        e.printStackTrace();
+                    }
+                }
+        ));
 
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
@@ -85,21 +110,7 @@ public class Pit11View extends HorizontalLayout {
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
         splitLayout.addToPrimary(wrapper);
-        Button btnTestReport = new Button("TestReport", event -> {
-            String repReturn = null;
-            try {
-                repReturn = pit11Service.exportPit11Report("pdf");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (JRException e) {
-                e.printStackTrace();
-            }
-            System.out.println(repReturn);
-        });
-        wrapper.add(grid, btnTestReport);
-
-
-
+        wrapper.add(grid);
     }
 
     private void refreshGrid() {
