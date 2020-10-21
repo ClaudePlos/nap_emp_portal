@@ -1,47 +1,43 @@
 package pl.kskowronski.views.pit11;
 
-import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.server.frontend.installer.DefaultFileDownloader;
-import com.vaadin.flow.server.frontend.installer.ProxyConfig;
 import net.sf.jasperreports.engine.JRException;
-import org.apache.catalina.webresources.FileResource;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.ResourceUtils;
-import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracje;
+import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracjeDTO;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.reaports.Pit11Service;
 import pl.kskowronski.data.service.egeria.eDek.EdktDeklaracjeService;
 import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.views.main.MainView;
-
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Route(value = "Pit11", layout = MainView.class)
 @PageTitle("Pit11")
 public class Pit11View extends HorizontalLayout {
 
-    private Grid<EdktDeklaracje> grid;
+    private Grid<EdktDeklaracjeDTO> grid;
 
     private UserService userService;
     private EdktDeklaracjeService edktDeklaracjeService;
@@ -67,24 +63,24 @@ public class Pit11View extends HorizontalLayout {
 
         setId("pit11-view");
 
-        grid = new Grid<>(EdktDeklaracje.class);
-        grid.setColumns("dklId", "dklTdlKod", "dklPrcId", "dklDataOd", "dklDataDo", "dklXmlVisual", "dklFrmId");
+        grid = new Grid<>(EdktDeklaracjeDTO.class);
+        grid.setColumns("dklTdlKod", "dklYear", "dklXmlVisual", "dklFrmNazwa");
 
 
         //grid.setDataProvider(dataProvider);
         //grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         //rid.setHeightFull();
 
-        List<EdktDeklaracje> listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId())
-                .get().stream()
+        List<EdktDeklaracjeDTO> listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId())
+                .stream()
                 .filter( i -> i.getDklStatus().equals(BigDecimal.valueOf(50L))) // status have UPO
-                .sorted(Comparator.comparing(EdktDeklaracje::getDklDataOd).reversed())
+                .sorted(Comparator.comparing(EdktDeklaracjeDTO::getDklDataOd).reversed())
                 .collect(Collectors.toList());
-        //System.out.println(listEDeklaracje.size());
+
         grid.setItems(listEDeklaracje);
 
         // run generate pit pdf
-        grid.addColumn(new NativeButtonRenderer<EdktDeklaracje>("Pit11",
+        grid.addColumn(new NativeButtonRenderer<EdktDeklaracjeDTO>("Pit11",
                 item -> {
                     try {
                         String path = pit11Service.exportPit11Report("pdf", worker.get().getPassword(), dtYYYY.format(item.getDklDataOd()),  item.getDklXmlVisual());
@@ -109,42 +105,27 @@ public class Pit11View extends HorizontalLayout {
         refreshGrid();
     }
 
-    private void generatDateInGrid(EdktDeklaracje item){
+    private void generatDateInGrid(EdktDeklaracjeDTO item){
         grid.setItems(item);
     }
 
     private void displayPitPDFonBrowser(String path) throws FileNotFoundException, IOException {
-        String timeStamp = (new Timestamp(new Date().getTime())).toString();
-        //UI.getCurrent().getPage().executeJavaScript("window.open('"+ path + "','_blank')");
-
-//        StreamResource resource = new StreamResource(path, (out, session) -> System.out.println(out.toString()));
-//        Anchor downloadLink = new Anchor(resource, "Download!");
-//        downloadLink.setId(timeStamp);
-//        downloadLink.getElement().setAttribute("download", true);
-//        add(downloadLink);
-
 
         File filePdf = ResourceUtils.getFile(path);
 
-        byte[] test = FileUtils.readFileToByteArray(filePdf);
+        byte[] pdfBytes = FileUtils.readFileToByteArray(filePdf);
 
-        StreamResource res = new StreamResource("file.pdf", () -> new ByteArrayInputStream(test));
-        Anchor a = new Anchor(res, "click here to download");
-        add(a);
+        Dialog dialog = new Dialog();
+        dialog.setWidth("300px");
+        dialog.setHeight("150px");
 
-//        StreamResource streamResource = new StreamResource("whatever.pdf",
-//                () -> getClass().getResourceAsStream(path));
-//        Anchor anchor = new Anchor(streamResource, "Download PDF");
-//        anchor.getElement().setAttribute("download", "downloaded-other-name.pdf");
-//        add(anchor);
+        StreamResource res = new StreamResource("file.pdf", () -> new ByteArrayInputStream(pdfBytes));
+        Anchor a = new Anchor(res, "kliknij tu by pobrać pit11");
+        a.setTarget( "_blank" ) ;
 
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        InputStream is=new ByteArrayInputStream(baos.toByteArray());
-//        StreamResource myResource = new StreamResource(path, () -> is);
-//        Anchor downloadLink = new Anchor(myResource, "");
-//        downloadLink.getElement().setAttribute("download", true);
-//        downloadLink.add(new Button(new Icon(VaadinIcon.DOWNLOAD_ALT)));
-//        add(downloadLink);
+        dialog.add(a);
+        add(dialog);
+        dialog.open();
     }
 
 

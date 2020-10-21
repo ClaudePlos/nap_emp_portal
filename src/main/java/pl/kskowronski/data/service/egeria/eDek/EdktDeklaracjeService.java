@@ -1,15 +1,16 @@
 package pl.kskowronski.data.service.egeria.eDek;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracje;
+import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracjeDTO;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecimal> {
@@ -19,6 +20,8 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
     public EdktDeklaracjeService(@Autowired EdktDeklaracjeRepo repo) {
         this.repo = repo;
     }
+
+    SimpleDateFormat dtYYYY = new SimpleDateFormat("yyyy");
 
     @Override
     protected EdktDeklaracjeRepo getRepository() {
@@ -30,9 +33,29 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
         return repo.findByDklId(dklId);
     };
 
-    public Optional<List<EdktDeklaracje>> findAllByDklPrcId(BigDecimal prcId){
+    public List<EdktDeklaracjeDTO> findAllByDklPrcId(BigDecimal prcId){
         repo.setConsolidate();
-        return repo.findAllByDklPrcId(prcId);
+        Optional<List<EdktDeklaracje>> listDek = repo.findAllByDklPrcId(prcId);
+        List<EdktDeklaracjeDTO> listDekDTO = new ArrayList<>();
+        listDek.get().stream().forEach( item -> listDekDTO.add( mapperEdktDeklaracje(item)));
+        return listDekDTO;
     };
+
+    private EdktDeklaracjeDTO mapperEdktDeklaracje( EdktDeklaracje dek){
+        EdktDeklaracjeDTO dekDTO = new EdktDeklaracjeDTO();
+        dekDTO.setDklId(dek.getDklId());
+        dekDTO.setDklFrmId(dek.getDklFrmId());
+        dekDTO.setDklPrcId(dek.getDklPrcId());
+        dekDTO.setDklDataOd(dek.getDklDataOd());
+        dekDTO.setDklDataDo(dek.getDklDataDo());
+        dekDTO.setDklStatus(dek.getDklStatus());
+        dekDTO.setDklTdlKod(dek.getDklTdlKod());
+        dekDTO.setDklXmlVisual(dek.getDklXmlVisual());
+        dekDTO.setDklFrmNazwa("FRMNAZWA");
+        dekDTO.setDklYear(dtYYYY.format(dek.getDklDataOd()));
+        return dekDTO;
+    }
+
+
 
 }
