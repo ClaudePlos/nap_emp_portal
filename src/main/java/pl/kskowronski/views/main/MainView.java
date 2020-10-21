@@ -98,11 +98,11 @@ public class MainView extends AppLayout {
 
     private Component[] createMenuItems() {
         return new Tab[] {
-            createTab("Main Page", MainPageView.class),
+            createTab("Strona główna", MainPageView.class),
             createTab("Twój urlop", AllAboutAbsencesView.class),
+            createTab("Pit11", Pit11View.class),
             createTab("Card List", CardListView.class),
             createTab("Master-Detail", MasterDetailView.class),
-            createTab("Pit11", Pit11View.class),
             createTab("About", AboutView.class)
         };
     }

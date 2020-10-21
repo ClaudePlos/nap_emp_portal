@@ -4,6 +4,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
@@ -49,6 +50,8 @@ public class Pit11View extends HorizontalLayout {
     SimpleDateFormat dtYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat dtYYYY = new SimpleDateFormat("yyyy");
 
+    Label labelXML = new Label();
+
     public Pit11View(@Autowired UserService userService, @Autowired EdktDeklaracjeService edktDeklaracjeService) {
 
         this.userService = userService;
@@ -63,13 +66,18 @@ public class Pit11View extends HorizontalLayout {
 
         setId("pit11-view");
 
-        grid = new Grid<>(EdktDeklaracjeDTO.class);
+        this.grid = new Grid<>(EdktDeklaracjeDTO.class);
         grid.setColumns("dklTdlKod", "dklYear", "dklXmlVisual", "dklFrmNazwa");
-
+        grid.getColumnByKey("dklTdlKod").setWidth("100px").setHeader("Dek");
+        grid.getColumnByKey("dklYear").setWidth("100px").setHeader("Rok");
+        grid.getColumnByKey("dklXmlVisual").setWidth("100px").setHeader("Xml");
+        grid.getColumnByKey("dklFrmNazwa").setWidth("300px").setHeader("Firma");
+//        grid.setWidthFull();
+//        grid.setHeightFull();
 
         //grid.setDataProvider(dataProvider);
         //grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        //rid.setHeightFull();
+        //grid.setHeightFull();
 
         List<EdktDeklaracjeDTO> listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId())
                 .stream()
@@ -103,6 +111,12 @@ public class Pit11View extends HorizontalLayout {
         add(splitLayout);
 
         refreshGrid();
+
+        grid.addItemClickListener(
+        event -> {
+            labelXML.setText(event.getItem().getDklXmlVisual());
+        });
+
     }
 
     private void generatDateInGrid(EdktDeklaracjeDTO item){
@@ -134,8 +148,9 @@ public class Pit11View extends HorizontalLayout {
         Div wrapper = new Div();
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
+        wrapper.setHeightFull();
         splitLayout.addToPrimary(wrapper);
-        wrapper.add(grid);
+        wrapper.add(grid, labelXML);
     }
 
     private void refreshGrid() {

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracje;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracjeDTO;
+import pl.kskowronski.data.service.egeria.global.EatFirmaRepo;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -16,6 +17,9 @@ import java.util.Optional;
 public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecimal> {
 
     private EdktDeklaracjeRepo repo;
+
+    @Autowired
+    private EatFirmaRepo eatFirmaRepo;
 
     public EdktDeklaracjeService(@Autowired EdktDeklaracjeRepo repo) {
         this.repo = repo;
@@ -51,7 +55,7 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
         dekDTO.setDklStatus(dek.getDklStatus());
         dekDTO.setDklTdlKod(dek.getDklTdlKod());
         dekDTO.setDklXmlVisual(dek.getDklXmlVisual());
-        dekDTO.setDklFrmNazwa("FRMNAZWA");
+        dekDTO.setDklFrmNazwa( eatFirmaRepo.findById(dek.getDklFrmId()).get().getFrmNazwa() );
         dekDTO.setDklYear(dtYYYY.format(dek.getDklDataOd()));
         return dekDTO;
     }
