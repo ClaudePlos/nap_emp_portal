@@ -34,7 +34,7 @@ public class Pit11Service {
             absolutePath = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pattern/pit11_25.jrxml";
             path = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pdf/";
         }
-        System.out.println(absolutePath);
+        //System.out.println(absolutePath);
         //File file = ResourceUtils.getFile("classpath:pit11_25.jrxml"); // only for windows
         File filePattern = ResourceUtils.getFile(absolutePath);
         JasperReport jasperReport = JasperCompileManager.compileReport(filePattern.getAbsolutePath());
