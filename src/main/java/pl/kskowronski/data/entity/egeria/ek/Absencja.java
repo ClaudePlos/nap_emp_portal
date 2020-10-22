@@ -12,20 +12,20 @@ public class Absencja {
     @Column(name = "ab_id")
     private BigDecimal abId;
 
-    @Column(name = "ab_zwol_id")
+    @Column(name = "ab_zwol_id", nullable = false)
     private BigDecimal abZwolId;
 
-    @Column(name = "ab_rda_id")
+    @Column(name = "ab_rda_id", nullable = false)
     private BigDecimal abRdaId;
 
-    @Column(name = "ab_prc_id")
+    @Column(name = "ab_prc_id", nullable = false)
     private BigDecimal abPrcId;
 
-    @Column(name = "ab_data_od")
+    @Column(name = "ab_data_od", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date abDataOd;
 
-    @Column(name = "ab_data_do")
+    @Column(name = "ab_data_do", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date abDataDo;
 

@@ -20,6 +20,12 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.VaadinSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import pl.kskowronski.data.entity.egeria.ek.User;
+import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.views.mainpage.MainPageView;
 import pl.kskowronski.views.absences.AllAboutAbsencesView;
 import pl.kskowronski.views.cardlist.CardListView;
@@ -37,13 +43,18 @@ public class MainView extends AppLayout {
     private final Tabs menu;
     private H1 viewTitle;
 
-    public MainView() {
+    public MainView(@Autowired UserService userService) {
         //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //System.out.println(userDetails.getUsername());
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
         addToDrawer(createDrawerContent(menu));
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> worker = userService.findByPassword(userDetails.getPassword());
+        VaadinSession session = VaadinSession.getCurrent();
+        session.setAttribute(User.class, worker.get());
     }
 
     private Component createHeaderContent() {

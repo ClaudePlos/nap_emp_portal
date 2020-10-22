@@ -1,16 +1,24 @@
 package pl.kskowronski.data.service.egeria.ek;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
+import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.ek.AbsenceDTO;
 import pl.kskowronski.data.entity.egeria.ek.Absencja;
+import pl.kskowronski.data.entity.egeria.ek.Zwolnienie;
+import pl.kskowronski.data.entity.egeria.global.EatFirma;
+import pl.kskowronski.data.reaports.Pit11Service;
+import pl.kskowronski.data.service.egeria.global.ConsolidationService;
 import pl.kskowronski.data.service.egeria.global.EatFirmaRepo;
+import pl.kskowronski.data.service.egeria.global.EatFirmaService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class AbsenceService extends CrudService<Absencja, BigDecimal> {
 
     private AbsenceRepo repo;
@@ -20,10 +28,13 @@ public class AbsenceService extends CrudService<Absencja, BigDecimal> {
     }
 
     @Autowired
-    private EatFirmaRepo eatFirmaRepo;
+    ConsolidationService consolidationService;
 
     @Autowired
     private ZwolnienieRepo zwolnienieRepo;
+
+    @Autowired
+    private EatFirmaRepo eatFirmaRepo;
 
     @Autowired
     private AbsenceTypeRepo absenceTypeRepo;
@@ -33,9 +44,13 @@ public class AbsenceService extends CrudService<Absencja, BigDecimal> {
         return repo;
     }
 
-    public List<AbsenceDTO> findAllByAbPrcIdAndAbDAndAdDataOd_Year(BigDecimal prcId, String year) throws Exception {
-        repo.setConsolidate();
-        Optional<List<Absencja>> listAbsence = repo.findAllByAbPrcIdAndAbDAndAdDataOd_Year(prcId, year);
+    MapperDate mapperDate = new MapperDate();
+
+    public List<AbsenceDTO> findAllByAbPrcIdForYear(BigDecimal prcId, String year) throws Exception {
+        consolidationService.setConsolidateCompany();
+        Optional<List<Absencja>> listAbsence = repo.findAllByAbPrcIdForYear(prcId
+                , mapperDate.dtYYYYMMDD.parse(year+"-01-01")
+                , mapperDate.dtYYYYMMDD.parse(year+"-12-31"));
         if (!listAbsence.isPresent()){
             throw new Exception("Brak absencji w danym roku");
         }
@@ -57,7 +72,9 @@ public class AbsenceService extends CrudService<Absencja, BigDecimal> {
         absence.setAbDniWykorzystane(ab.getAbDniWykorzystane());
         absence.setAbGodzinyWykorzystane(ab.getAbGodzinyWykorzystane());
         absence.setAbFanulowana(ab.getAbFanulowana());
-        absence.setAbFrmName( eatFirmaRepo.findById( zwolnienieRepo.findById(ab.getAbZwolId()).get().getZwolFrmId()).get().getFrmNazwa() );
+        Zwolnienie zwol = zwolnienieRepo.findById(ab.getAbZwolId()).get();
+        EatFirma firma = eatFirmaRepo.findById( zwol.getZwolFrmId() ).get();
+        absence.setAbFrmName( firma.getFrmNazwa() );
         absence.setAbTypeOfAbsence( absenceTypeRepo.findById(ab.getAbRdaId()).get().getRdaNazwa() );
         return absence;
     }
