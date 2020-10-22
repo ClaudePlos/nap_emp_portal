@@ -101,7 +101,7 @@ public class MainView extends AppLayout {
             createTab("Strona główna", MainPageView.class),
             createTab("Twój urlop", AllAboutAbsencesView.class),
             createTab("Pit11", Pit11View.class),
-            createTab("Card List", CardListView.class),
+            createTab("Ocena 360", CardListView.class),
             createTab("Master-Detail", MasterDetailView.class),
             createTab("About", AboutView.class)
         };
