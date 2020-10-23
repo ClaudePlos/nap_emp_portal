@@ -2,6 +2,7 @@ package pl.kskowronski.views.absences;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.NotFoundException;
@@ -17,6 +18,7 @@ import pl.kskowronski.data.service.egeria.ek.AbsenceService;
 import pl.kskowronski.views.main.MainView;
 
 import java.util.List;
+import java.util.Optional;
 
 @Route(value = "absences", layout = MainView.class)
 @PageTitle("Twój urlop")
@@ -27,6 +29,7 @@ public class AllAboutAbsencesView extends VerticalLayout {
     NumberField yearField = new NumberField();
     MapperDate dataMapper = new MapperDate();
     private User worker;
+    Notification notification = new Notification();
 
     AbsenceService absenceService;
 
@@ -68,8 +71,11 @@ public class AllAboutAbsencesView extends VerticalLayout {
     }
 
     private void onAbsenceChangeYear(String year) throws Exception {
-        List<AbsenceDTO> listAbsences = absenceService.findAllByAbPrcIdForYear(worker.getPrcId(), year);
-        grid.setItems(listAbsences);
+        Optional<List<AbsenceDTO>> listAbsences = absenceService.findAllByAbPrcIdForYear(worker.getPrcId(), year);
+        if (listAbsences.get().size() == 0){
+            Notification.show("Brak absencji w roku: " + year, 3000, Notification.Position.TOP_CENTER);
+        }
+        grid.setItems(listAbsences.get());
         grid.getDataProvider().refreshAll();
     }
 
