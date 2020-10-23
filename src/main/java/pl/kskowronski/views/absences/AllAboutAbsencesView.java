@@ -2,6 +2,7 @@ package pl.kskowronski.views.absences;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -12,8 +13,10 @@ import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.ek.AbsenceDTO;
+import pl.kskowronski.data.entity.egeria.ek.AbsenceLimitDTO;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.reaports.Pit11Service;
+import pl.kskowronski.data.service.egeria.ek.AbsenceLimitService;
 import pl.kskowronski.data.service.egeria.ek.AbsenceService;
 import pl.kskowronski.views.main.MainView;
 
@@ -25,20 +28,52 @@ import java.util.Optional;
 @CssImport("./styles/views/helloworld/hello-world-view.css")
 public class AllAboutAbsencesView extends VerticalLayout {
 
+    private Grid<AbsenceLimitDTO> gridAbLimit;
     private Grid<AbsenceDTO> grid;
     NumberField yearField = new NumberField();
-    MapperDate dataMapper = new MapperDate();
+    MapperDate mapperDate = new MapperDate();
     private User worker;
     Notification notification = new Notification();
 
     AbsenceService absenceService;
+    AbsenceLimitService absenceLimitService;
 
-    public AllAboutAbsencesView(@Autowired AbsenceService absenceService) throws Exception {
+    public AllAboutAbsencesView(@Autowired AbsenceService absenceService, @Autowired AbsenceLimitService absenceLimitService) throws Exception {
         this.absenceService = absenceService;
+        this.absenceLimitService = absenceLimitService;
         setId("all-about-absences-view");
+        VaadinSession session = VaadinSession.getCurrent();
+        worker = session.getAttribute(User.class);
+
+        Optional<List<AbsenceLimitDTO>> listAbsencesLimits
+                = absenceLimitService.findAllAbsenceLimitForPrcIdAndYear(worker.getPrcId()
+                , mapperDate.getCurrentlyYear()
+                , "'A_UR1','UR91','UR31'"); // ,'A_UR11' na zadanie
+        if (listAbsencesLimits.get().size() == 0){
+            Notification.show("Brak limitów urlopowych w roku: " + mapperDate.getCurrentlyYear(), 3000, Notification.Position.MIDDLE);
+        }
+
+        Label labTitleGridLimit = new Label("Twojego urlopu w roku " + mapperDate.getCurrentlyYear() + " zostało:");
+        add(labTitleGridLimit);
+        this.gridAbLimit = new Grid<>(AbsenceLimitDTO.class);
+        gridAbLimit.setColumns("nazwaWymiaru", "kodUrlopu", "ldOd", "ldDo", "pozostaloUrlopu", "frmNazwa");
+        gridAbLimit.getColumnByKey("nazwaWymiaru").setWidth("200px").setHeader("Nazwa");
+        gridAbLimit.getColumnByKey("kodUrlopu").setWidth("80px").setHeader("Kod");
+        gridAbLimit.getColumnByKey("ldOd").setWidth("80px").setHeader("Od");
+        gridAbLimit.getColumnByKey("ldDo").setWidth("80px").setHeader("Do");
+        gridAbLimit.getColumnByKey("pozostaloUrlopu").setWidth("100px").setHeader("Zostało dni");
+        gridAbLimit.getColumnByKey("frmNazwa").setWidth("200px").setHeader("Firma");
+        gridAbLimit.setItems(listAbsencesLimits.get());
+        gridAbLimit.setHeight("150px");
+        add(gridAbLimit);
+
+
+        Label labTitleGrid = new Label("Twoje absencje w roku:");
+        add(labTitleGrid);
+
         yearField.setLabel("Rok");
         yearField.setHasControls(true);
-        yearField.setValue(Double.parseDouble(dataMapper.getCurrentlyYear()));
+        yearField.setValue(Double.parseDouble(mapperDate.getCurrentlyYear()));
         yearField.addValueChangeListener( e-> {
             try {
                 onAbsenceChangeYear( String.valueOf(e.getValue().intValue()));
@@ -50,8 +85,7 @@ public class AllAboutAbsencesView extends VerticalLayout {
         setHorizontalComponentAlignment(Alignment.START, yearField);
         //setVerticalComponentAlignment(Alignment.END, yearField);
 
-        VaadinSession session = VaadinSession.getCurrent();
-        worker = session.getAttribute(User.class);
+
 
         this.grid = new Grid<>(AbsenceDTO.class);
         grid.setColumns("abTypeOfAbsence", "abDataOd", "abDataDo", "abDniWykorzystane", "abGodzinyWykorzystane", "abFrmName");
@@ -73,7 +107,7 @@ public class AllAboutAbsencesView extends VerticalLayout {
     private void onAbsenceChangeYear(String year) throws Exception {
         Optional<List<AbsenceDTO>> listAbsences = absenceService.findAllByAbPrcIdForYear(worker.getPrcId(), year);
         if (listAbsences.get().size() == 0){
-            Notification.show("Brak absencji w roku: " + year, 3000, Notification.Position.TOP_CENTER);
+            Notification.show("Brak absencji w roku: " + year, 3000, Notification.Position.MIDDLE);
         }
         grid.setItems(listAbsences.get());
         grid.getDataProvider().refreshAll();
