@@ -1,5 +1,6 @@
 package pl.kskowronski.views.pit11;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
@@ -137,7 +138,7 @@ public class Pit11View extends HorizontalLayout {
         Anchor a = new Anchor(res, "kliknij tu by pobrać pit11");
         a.setTarget( "_blank" ) ;
 
-        dialog.add(a);
+        dialog.add(a, new Button("Zamknij", e -> dialog.close()));
         add(dialog);
         dialog.open();
     }

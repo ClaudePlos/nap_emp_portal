@@ -1,5 +1,6 @@
 package pl.kskowronski.data.service.egeria.ek;
 
+import com.vaadin.flow.router.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
@@ -52,7 +53,7 @@ public class AbsenceService extends CrudService<Absencja, BigDecimal> {
                 , mapperDate.dtYYYYMMDD.parse(year+"-01-01")
                 , mapperDate.dtYYYYMMDD.parse(year+"-12-31"));
         if (!listAbsence.isPresent()){
-            throw new Exception("Brak absencji w danym roku");
+            throw new NotFoundException("Brak absencji w danym roku");
         }
         List<AbsenceDTO> listAbsenceDTO = new ArrayList<>();
         listAbsence.get().stream().forEach( item -> listAbsenceDTO.add( mapperAbsence(item)));

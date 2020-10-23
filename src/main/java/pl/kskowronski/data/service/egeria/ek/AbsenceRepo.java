@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface AbsenceRepo extends JpaRepository<Absencja, BigDecimal> {
 
-     @Query("select a from Absencja a where a.abPrcId = :prcId and a.abDataOd >= :dateFrom and a.abDataOd <= :dateTo")
+     @Query("select a from Absencja a where a.abPrcId = :prcId and a.abDataOd >= :dateFrom and a.abDataOd <= :dateTo order by a.abDataOd desc")
      Optional<List<Absencja>> findAllByAbPrcIdForYear(@Param("prcId") BigDecimal prcId
              , @Param("dateFrom") Date dateFrom
              , @Param("dateTo") Date dateTo);

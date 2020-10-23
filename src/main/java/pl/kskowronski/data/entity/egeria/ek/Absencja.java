@@ -22,11 +22,11 @@ public class Absencja {
     private BigDecimal abPrcId;
 
     @Column(name = "ab_data_od", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date abDataOd;
 
     @Column(name = "ab_data_do", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date abDataDo;
 
     @Column(name = "ab_kod_funduszu")

@@ -23,7 +23,7 @@ public class MyUserDetailsService implements UserDetailsService
         //BigDecimal.valueOf(Long.parseLong(username))
         Optional<User> user = userRepo.findByUsername(username);
         if (user.get() == null) {
-            throw new UsernameNotFoundException("Could not find user with that email");
+            throw new UsernameNotFoundException("Could not find user with this username and pass");
         }
         return new MyUserDetails(user.get());
     }
