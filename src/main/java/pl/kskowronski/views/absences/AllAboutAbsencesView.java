@@ -1,5 +1,6 @@
 package pl.kskowronski.views.absences;
 
+import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Label;
@@ -59,10 +60,10 @@ public class AllAboutAbsencesView extends VerticalLayout {
         gridAbLimit.setColumns("nazwaWymiaru", "kodUrlopu", "ldOd", "ldDo", "pozostaloUrlopu", "frmNazwa");
         gridAbLimit.getColumnByKey("nazwaWymiaru").setWidth("200px").setHeader("Nazwa");
         gridAbLimit.getColumnByKey("kodUrlopu").setWidth("80px").setHeader("Kod");
-        gridAbLimit.getColumnByKey("ldOd").setWidth("80px").setHeader("Od");
-        gridAbLimit.getColumnByKey("ldDo").setWidth("80px").setHeader("Do");
+        gridAbLimit.getColumnByKey("ldOd").setWidth("130px").setHeader("Od");
+        gridAbLimit.getColumnByKey("ldDo").setWidth("130px").setHeader("Do");
         gridAbLimit.getColumnByKey("pozostaloUrlopu").setWidth("100px").setHeader("Zostało dni");
-        gridAbLimit.getColumnByKey("frmNazwa").setWidth("200px").setHeader("Firma");
+        gridAbLimit.getColumnByKey("frmNazwa").setWidth("250px").setHeader("Firma");
         gridAbLimit.setItems(listAbsencesLimits.get());
         gridAbLimit.setHeight("150px");
         add(gridAbLimit);
@@ -72,6 +73,7 @@ public class AllAboutAbsencesView extends VerticalLayout {
         add(labTitleGrid);
 
         yearField.setLabel("Rok");
+        yearField.getElement().setProperty("title", "Test");
         yearField.setHasControls(true);
         yearField.setValue(Double.parseDouble(mapperDate.getCurrentlyYear()));
         yearField.addValueChangeListener( e-> {
