@@ -1,5 +1,6 @@
 package pl.kskowronski.data.reaports;
 
+import net.sf.jasperreports.engine.design.JRDesignStyle;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import org.springframework.stereotype.Service;
 import net.sf.jasperreports.engine.*;
@@ -47,7 +48,12 @@ public class Pit11Service {
         params.put(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, document);
         params.put("createdBy", "anfix poland");
 
+        JRDesignStyle jrDesignStyle = new JRDesignStyle();
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params);
+        jrDesignStyle.setPdfEncoding("UTF-8");
+        jasperPrint.addStyle(jrDesignStyle);
+        jasperPrint.setLocaleCode("UTF-8");
+
         String pathPdfFile = path + "pit11_"+ yearPit + "_" + workerID + ".pdf";
         if (reportFormat.equalsIgnoreCase("html")) {
             JasperExportManager.exportReportToHtmlFile(jasperPrint, path + "\\pit11_"+ yearPit + "_" + workerID + ".html");
@@ -73,7 +79,9 @@ public class Pit11Service {
             builder = factory.newDocumentBuilder();
 
             //Parse the content to Document object
-            Document doc = builder.parse(new InputSource(new StringReader(xmlString)));
+            InputSource is = new InputSource(new StringReader(xmlString));
+            //is.setEncoding("ISO-8859-2");
+            Document doc = builder.parse(is);
             return doc;
         }
         catch (Exception e)

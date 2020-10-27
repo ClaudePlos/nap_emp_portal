@@ -422,7 +422,7 @@ $F{NIP}.substring(9,10)+" "]]></textFieldExpression>
             <textField textAdjust="StretchHeight" isBlankWhenNull="true">
                 <reportElement x="51" y="399" width="475" height="18" uuid="9cd209b3-d2d8-4cb8-b170-834034e9970c"/>
                 <textElement verticalAlignment="Middle">
-                    <font fontName="SansSerif" size="8"/>
+                    <font fontName="SansSerif" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{PelnaNazwa}]]></textFieldExpression>
             </textField>
@@ -449,7 +449,7 @@ $F{rodzajIdentyfikatora}.equals(new String("N"))?$F{NIP2}:(new String("BRAK"))
                 <textField isBlankWhenNull="true">
                     <reportElement x="54" y="584" width="173" height="14" uuid="f99afc5f-17d1-4864-a979-ecc9a877de4e"/>
                     <textElement verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="9"/>
+                        <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{Nazwisko}]]></textFieldExpression>
                 </textField>
@@ -488,14 +488,14 @@ $F{DataUrodzenia}.substring( 0, 4)]]></textFieldExpression>
                 <textField isBlankWhenNull="true">
                     <reportElement x="54" y="540" width="467" height="14" uuid="97e14721-b536-4e05-bfa3-f6da0cab44d3"/>
                     <textElement verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="9"/>
+                        <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{RodzajNrId}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
                     <reportElement x="54" y="562" width="356" height="14" uuid="3aaf27ed-dd18-4e20-8316-4fd0f378faf4"/>
                     <textElement verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="9"/>
+                        <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{NazwaKrajuWydania}]]></textFieldExpression>
                 </textField>
@@ -504,14 +504,14 @@ $F{DataUrodzenia}.substring( 0, 4)]]></textFieldExpression>
                 <textField isBlankWhenNull="true">
                     <reportElement x="54" y="607" width="98" height="12" uuid="5cfd021f-de46-414a-ae90-30df848d2eba"/>
                     <textElement verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="9"/>
+                        <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{Kraj}]]></textFieldExpression>
                 </textField>
                 <textField isBlankWhenNull="true">
                     <reportElement x="154" y="607" width="209" height="13" uuid="4391f862-2d9e-455b-b2af-664795961f2d"/>
                     <textElement verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="9"/>
+                        <font fontName="SansSerif" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{Wojewodztwo}]]></textFieldExpression>
                 </textField>
