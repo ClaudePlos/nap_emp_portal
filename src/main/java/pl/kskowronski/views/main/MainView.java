@@ -31,6 +31,7 @@ import pl.kskowronski.views.absences.AllAboutAbsencesView;
 import pl.kskowronski.views.cardlist.CardListView;
 import pl.kskowronski.views.masterdetail.MasterDetailView;
 import pl.kskowronski.views.about.AboutView;
+import pl.kskowronski.views.payslips.PayslipsView;
 import pl.kskowronski.views.pit11.Pit11View;
 
 /**
@@ -68,7 +69,7 @@ public class MainView extends AppLayout {
         viewTitle = new H1();
         layout.add(viewTitle);
 
-        Anchor logout = new Anchor("/logout","Log out");
+        Anchor logout = new Anchor("/logout","Wyloguj ");
         NativeButton buttonLogOut = new NativeButton(
                 "LogOut");
 //        buttonLogOut.addClickListener(e ->
@@ -112,8 +113,9 @@ public class MainView extends AppLayout {
             createTab("Strona główna", MainPageView.class),
             createTab("Twój urlop", AllAboutAbsencesView.class),
             createTab("Pit11", Pit11View.class),
-            createTab("Ocena 360", CardListView.class),
-            createTab("Master-Detail", MasterDetailView.class),
+            createTab("Paski", PayslipsView.class),
+            //createTab("Ocena 360", CardListView.class),
+            //createTab("Master-Detail", MasterDetailView.class),
             createTab("About", AboutView.class)
         };
     }

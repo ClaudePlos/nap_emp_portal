@@ -14,7 +14,7 @@ public class AboutView extends Div {
 
     public AboutView() {
         setId("about-view");
-        add(new Label("Content placeholder"));
+        add(new Label("Content made by k.skowronski"));
     }
 
 }

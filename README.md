@@ -20,11 +20,7 @@ Clicking on the green run button will start the application.
 
 After the application has started, you can view your it at http://localhost:8080/ in your browser.
 
-#### Eclipse
-- Right click on a project folder and select `Run As` --> `Maven build..` . After that a configuration window is opened.
-- In the window set the value of the **Goals** field to `spring-boot:run` 
-- You can optionally select `Skip tests` checkbox
-- All the other settings can be left to default
+
 
 Once configurations are set clicking `Run` will start the application
 
@@ -42,3 +38,6 @@ Once configurations are set clicking `Run` will start the application
 - Follow the tutorials in [vaadin.com/tutorials](https://vaadin.com/tutorials). Especially [vaadin.com/tutorials/getting-started-with-flow](https://vaadin.com/tutorials/getting-started-with-flow) is good for getting a grasp of the basic Vaadin concepts.
 - Read the documentation in [vaadin.com/docs](https://vaadin.com/docs).
 - For a bigger Vaadin application example, check out the Full Stack App starter from [vaadin.com/start](https://vaadin.com/start).
+
+spring auth 
+https://www.youtube.com/watch?v=WOjdaQYoeX8&t=513s

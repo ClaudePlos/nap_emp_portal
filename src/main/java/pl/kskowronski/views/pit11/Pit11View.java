@@ -54,7 +54,7 @@ public class Pit11View extends HorizontalLayout {
     Label labelXML = new Label();
 
     public Pit11View(@Autowired UserService userService, @Autowired EdktDeklaracjeService edktDeklaracjeService) {
-
+        setHeight("95%");
         this.userService = userService;
         this.edktDeklaracjeService = edktDeklaracjeService;
 
@@ -74,7 +74,7 @@ public class Pit11View extends HorizontalLayout {
         grid.getColumnByKey("dklXmlVisual").setWidth("100px").setHeader("Xml");
         grid.getColumnByKey("dklFrmNazwa").setWidth("300px").setHeader("Firma");
 //        grid.setWidthFull();
-//        grid.setHeightFull();
+        grid.setHeightFull();
 
         //grid.setDataProvider(dataProvider);
         //grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
