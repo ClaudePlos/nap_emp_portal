@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.math.BigDecimal;
 
 @Service
 public class ConsolidationService {
@@ -17,6 +18,13 @@ public class ConsolidationService {
     public void setConsolidateCompany() {
         this.em.createNativeQuery("BEGIN eap_globals.USTAW_konsolidacje('T'); END;")
                 //.setParameter("inParam1", inParam1)
+                .executeUpdate();
+    }
+
+
+    @Transactional
+    public void setConsolidateCompanyOnCompany(BigDecimal frmId) {
+        this.em.createNativeQuery("BEGIN ap_globals.USTAW_firme(" + frmId + "); eap_globals.USTAW_konsolidacje('N'); END;")
                 .executeUpdate();
     }
 

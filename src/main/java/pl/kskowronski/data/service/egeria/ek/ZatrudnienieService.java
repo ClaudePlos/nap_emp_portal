@@ -1,12 +1,26 @@
 package pl.kskowronski.data.service.egeria.ek;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
+import pl.kskowronski.data.entity.egeria.ek.User;
+import pl.kskowronski.data.entity.egeria.ek.WymiarEtatu;
 import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
+import pl.kskowronski.data.service.egeria.global.ConsolidationService;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
+@Service
 public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
+
+    @PersistenceContext
+    private EntityManager em;
 
     private ZatrudnienieRepo repo;
 
@@ -18,5 +32,54 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
     protected ZatrudnienieRepo getRepository() {
         return repo;
     }
+
+    @Autowired
+    ConsolidationService consolidationService;
+
+    @Autowired
+    WymiarEtatuRepo wymiarEtatuRepo;
+
+
+
+    public List<User> getPracownikZatrudNaSkMc(BigDecimal prcIdForm, String okres, BigDecimal frmId, Long typeContract ){
+        consolidationService.setConsolidateCompanyOnCompany(frmId);
+        List<User> listaAktPracNaSk = new ArrayList<User>();
+        // todo KS usunąć stanowiska kosztow administracji
+        String sql = "select distinct prc_id, prc_numer, prc_nazwisko, prc_imie, prc_pesel, zat_wymiar, zat_status\n" +
+                "from ek_zatrudnienie, ek_pracownicy\n";
+        sql += "where (NVL(zat_data_do, to_date('2099', 'YYYY')) >= to_date('" + okres + "', 'YYYY-MM')\n" +
+                "and zat_data_zmiany <= last_day(to_date('" + okres + "', 'YYYY-MM')))\n" +
+                "and zat_typ_umowy = " + typeContract + "\n" +
+                "and zat_prc_id = prc_id\n";
+        sql += "and zat_prc_id = " + prcIdForm + " order by prc_nazwisko, prc_imie";
+
+        List result = em.createNativeQuery(sql).getResultList();
+        for (Iterator iter = result.iterator(); iter.hasNext();)
+        {
+            Object[] ob = (Object[]) iter.next();
+            User prac = new User();
+            BigDecimal prcId = (BigDecimal) ob[0];
+            BigDecimal prcNumer = (BigDecimal) ob[1];
+            prac.setPrcId(BigDecimal.valueOf(Long.parseLong(prcId.toString())));
+            prac.setPrcNumer(BigDecimal.valueOf(Long.parseLong(prcNumer.toString())));
+            prac.setPrcNazwisko((String) ob[2]);
+            prac.setPrcImie((String) ob[3]);
+            prac.setPrcPesel((String) ob[4]);
+
+            if ( typeContract == 0 ){
+                Zatrudnienie zat = new Zatrudnienie();
+                List<Zatrudnienie> listZat = new ArrayList<>();
+                Optional<WymiarEtatu> wymEtatu =  wymiarEtatuRepo.findById(Integer.parseInt(((BigDecimal) ob[5]).toString()));
+                zat.setWymiarEtatu(wymEtatu.get());
+                zat.setDef0( ((BigDecimal) ob[6]).toString() );
+                listZat.add(zat);
+                prac.setZatrudnienia(listZat);
+            }
+
+            listaAktPracNaSk.add(prac);
+        }
+        return listaAktPracNaSk;
+    }
+
 
 }

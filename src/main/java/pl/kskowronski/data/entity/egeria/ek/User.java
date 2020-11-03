@@ -1,10 +1,8 @@
 package pl.kskowronski.data.entity.egeria.ek;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "EK_PRACOWNICY")
@@ -23,11 +21,21 @@ public class User {
     @Column(name = "PRC_PESEL")
     private String password;
 
+    @Column(name = "PRC_PESEL")
+    private String prcPesel;
+
     @Column(name = "PRC_IMIE")
     private String prcImie;
 
     @Column(name = "PRC_NAZWISKO")
     private String prcNazwisko;
+
+    @Transient
+    private List<Zatrudnienie> zatrudnienia;
+
+    public String getNazwImie () {
+        return prcNazwisko + " " + prcImie;
+    }
 
     public User() {
     }
@@ -79,4 +87,22 @@ public class User {
     public void setPrcNazwisko(String prcNazwisko) {
         this.prcNazwisko = prcNazwisko;
     }
+
+    public String getPrcPesel() {
+        return prcPesel;
+    }
+
+    public void setPrcPesel(String prcPesel) {
+        this.prcPesel = prcPesel;
+    }
+
+    public List<Zatrudnienie> getZatrudnienia() {
+        return zatrudnienia;
+    }
+
+    public void setZatrudnienia(List<Zatrudnienie> zatrudnienia) {
+        this.zatrudnienia = zatrudnienia;
+    }
+
+
 }

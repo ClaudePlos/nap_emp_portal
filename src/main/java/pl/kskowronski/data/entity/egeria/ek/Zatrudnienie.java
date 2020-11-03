@@ -3,6 +3,7 @@ package pl.kskowronski.data.entity.egeria.ek;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "ek_zatrudnienie")
@@ -105,6 +106,9 @@ public class Zatrudnienie {
 
     @Column(name="zat_frm_id")
     private Long frmId;
+
+    @Transient
+    private WymiarEtatu wymiarEtatu;
 
     public Zatrudnienie() {
     }
@@ -379,5 +383,13 @@ public class Zatrudnienie {
 
     public void setFrmId(Long frmId) {
         this.frmId = frmId;
+    }
+
+    public WymiarEtatu getWymiarEtatu() {
+        return wymiarEtatu;
+    }
+
+    public void setWymiarEtatu(WymiarEtatu wymiarEtatu) {
+        this.wymiarEtatu = wymiarEtatu;
     }
 }

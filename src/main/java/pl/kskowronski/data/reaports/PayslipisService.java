@@ -4,15 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
@@ -23,7 +24,12 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import pl.kskowronski.data.entity.egeria.ckk.Client;
+import pl.kskowronski.data.entity.egeria.ek.*;
 import pl.kskowronski.data.service.egeria.ckk.ClientService;
+import pl.kskowronski.data.service.egeria.ek.EkDefGroupRepo;
+import pl.kskowronski.data.service.egeria.ek.EkGroupCodeRepo;
+import pl.kskowronski.data.service.egeria.ek.SkladnikService;
+import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
 
 
 @Service
@@ -32,9 +38,21 @@ public class PayslipisService {
     @Autowired
     private ClientService clientService;
 
+    @Autowired
+    private EkDefGroupRepo ekDefGroupRepo;
+
+    @Autowired
+    private EkGroupCodeRepo ekGroupCodeRepo;
+
+    @Autowired
+    private ZatrudnienieService zatrudnienieService;
+
+    @Autowired
+    SkladnikService skladnikService;
+
     public String PATH = "//home//szeryf//glassfish-4.0//glassfish//domains//domain1//docroot//inaprzod//pdf//"; //change it
 
-    private String generujPasek(String raportNazwa, Long skId, BigDecimal prcId, String okres, BigDecimal frmId, BigDecimal frmKlId, BigDecimal typeContract ) throws IOException {
+    private String generujPasek(String raportNazwa, Long skId, BigDecimal prcId, String okres, BigDecimal frmId, BigDecimal frmKlId, Long typeContract ) throws IOException {
 
         String fileName = prcId + "_" + typeContract + ".pdf";
         String path = "/pdf/" + fileName;
@@ -66,21 +84,22 @@ public class PayslipisService {
             float b = PageSize.A4.getBottom();
             float t = PageSize.A4.getTop();
 
-            List<EkDefGrupVO> listEkDefGrup = hrPasekServiceBean.getEkDefGrup("PASEK");
+            Optional<List<EkDefGroup>>listEkDefGroup =  ekDefGroupRepo.findAllByDgDkKodOrderByDgNumer("PASEK");
 
-            for ( EkDefGrupVO dg : listEkDefGrup ){
-                List<EkGrupyKodowVO> listEkGrupyKodow = hrPasekServiceBean.getEkGrupyKodow(dg.getDgKod());
+            for ( EkDefGroup dg : listEkDefGroup.get() ){
+                List<EkGroupCode> listEkGrupyKodow =  ekGroupCodeRepo.findAllByGkDgKodOrderByGkNumer(dg.getDgKod()).get();//hrPasekServiceBean.getEkGrupyKodow(dg.getDgKod());
                 dg.setEkGrupyKodow(listEkGrupyKodow);
             }
 
-            List<PracownikVO> listaAktPracNaSkMc = new ArrayList<>();
-            if (prcId != Long.parseLong("0") ){
-                listaAktPracNaSkMc = hrPasekServiceBean.getPracownikZatrudNaSkMc(prcId, okres, frmId, Long.parseLong("0"));
+            List<User> listaAktPracNaSkMc = new ArrayList<>();
+            if (prcId != BigDecimal.ZERO){
+                listaAktPracNaSkMc =  zatrudnienieService.getPracownikZatrudNaSkMc(prcId, okres, frmId, Long.parseLong("0")); //  hrPasekServiceBean.getPracownikZatrudNaSkMc();
             } else {
-                listaAktPracNaSkMc = hrPasekServiceBean.getPracownicyZatrudNaSkMc(skId, okres, frmId, typeContract);
+                //listaAktPracNaSkMc = hrPasekServiceBean.getPracownicyZatrudNaSkMc(skId, okres, frmId, typeContract);
+                System.out.printf("brak dla sk w tej wersji");
             }
 
-            for ( PracownikVO p : listaAktPracNaSkMc ){
+            for ( User p : listaAktPracNaSkMc ){
 
                 /**
                  *  Tabela - nagu0142\u00F3wek paska
@@ -128,15 +147,15 @@ public class PayslipisService {
 
 
                 cellNag_0_2.addElement(new Paragraph("DRUK SPE\u0141NIA WYMOGI RAPORTU ZUS RMUA za miesi\u0105c: "  + okres , helvBoldFont10));
-                cellNag_1_1.addElement(new Paragraph("Numer: " + p.getPrc_numer() + "   Nazwisko i imi\u0119: " + p.getNazwImie() , helvFont10));
-                cellNag_1_2.addElement(new Paragraph("PESEL: " + p.getPrc_pesel(), helvFont10));
+                cellNag_1_1.addElement(new Paragraph("Numer: " + p.getPrcNumer() + "   Nazwisko i imi\u0119: " + p.getNazwImie() , helvFont10));
+                cellNag_1_2.addElement(new Paragraph("PESEL: " + p.getPrcPesel(), helvFont10));
                 //cellNag_1_3.addElement(new Paragraph("NFZ: 12R - todo: oddziau0142 NFZ", helvFont10));
 
                 cellNag_2_1.addElement(new Paragraph("Nazwa firmy: " + frm.getKldNazwa(), helvFont10));
                 cellNag_2_2.addElement(new Paragraph("NIP: " + frm.getKldNip() + "  REGON: " + frm.getKldRegon(), helvFont10));
 
                 if ( p.getZatrudnienia() != null ){
-                    for ( ZatrudnienieVO zat : p.getZatrudnienia() ){
+                    for ( Zatrudnienie zat : p.getZatrudnienia() ){
                         cellNag_2_3.addElement(new Paragraph("Kod tytu\u0142u ubezpieczenia.: " + zat.getDef0() + "       Wymiar: " + zat.getWymiarEtatu().getOpis(), helvFont10));
                     }
                 }
@@ -309,7 +328,7 @@ public class PayslipisService {
 
                 String periodYYYYMM = okres;
 
-                for ( EkDefGrupVO dg : listEkDefGrup ){
+                for ( EkDefGroup dg : listEkDefGroup.get() ){
 
 //                        if (dg.getDgKod().equals("GRUPA1") ){
 //
@@ -325,13 +344,13 @@ public class PayslipisService {
 
                     if (dg.getDgKod().equals("GRUPA1") ){
                         String dskIdList = "";
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
                             dskIdList += "'"+dk.getGkDskId()+"',";
                         }
 
-                        List<EkSkladnikVO> listSkladniku = hrPasekServiceBean.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
+                        List<EkSkladnikDTO> listSkladniku = skladnikService.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
 
-                        for ( EkSkladnikVO s : listSkladniku ){
+                        for ( EkSkladnikDTO s : listSkladniku ){
                             if ( s.getWartosc() != 0 ){
                                 tabSkladNalicz.addCell(new Phrase(s.getDskNazwa(), helvFont10));
                                 tabSkladNalicz.addCell(new Phrase(s.getWartosc().toString(),  helvFont10));
@@ -340,27 +359,15 @@ public class PayslipisService {
                     }
 
 
-
-
-//                        if (dg.getDgKod().equals("GRUPA2") ){
-//
-//                            for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-//                                dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
-//                                if ( dk.getWartosc() != 0 ){
-//                                    tabSkladChor.addCell(new Phrase(dk.getDskNazwa(), helvFont10));
-//                                    tabSkladChor.addCell(new Phrase(dk.getWartosc().toString(),  helvFont10));
-//                                }
-//                            }
-//                        }
                     if (dg.getDgKod().equals("GRUPA2") ){
                         String dskIdList = "";
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
                             dskIdList += "'"+dk.getGkDskId()+"',";
                         }
 
-                        List<EkSkladnikVO> listSkladniku = hrPasekServiceBean.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
+                        List<EkSkladnikDTO> listSkladniku = skladnikService.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
 
-                        for ( EkSkladnikVO s : listSkladniku ){
+                        for ( EkSkladnikDTO s : listSkladniku ){
                             if ( s.getWartosc() != 0 ){
                                 tabSkladChor.addCell(new Phrase(s.getDskNazwa(), helvFont10));
                                 tabSkladChor.addCell(new Phrase(s.getWartosc().toString(),  helvFont10));
@@ -368,27 +375,17 @@ public class PayslipisService {
                         }
                     }
 
-//
 
-//                        if (dg.getDgKod().equals("GRUPA4") ){
-//                            for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-//                                dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
-//                                if ( dk.getWartosc() != 0 ){
-//                                    tabInnePotrac.addCell(new Phrase(dk.getDskNazwa(), helvFont10));
-//                                    tabInnePotrac.addCell(new Phrase(dk.getWartosc().toString(),  helvFont10));
-//                                }
-//                            }
-//                        }
 
                     if (dg.getDgKod().equals("GRUPA4") ){
                         String dskIdList = "";
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
                             dskIdList += "'"+dk.getGkDskId()+"',";
                         }
 
-                        List<EkSkladnikVO> listSkladniku = hrPasekServiceBean.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
+                        List<EkSkladnikDTO> listSkladniku = skladnikService.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
 
-                        for ( EkSkladnikVO s : listSkladniku ){
+                        for ( EkSkladnikDTO s : listSkladniku ){
                             if ( s.getWartosc() != 0 ){
                                 tabInnePotrac.addCell(new Phrase(s.getDskNazwa(), helvFont10));
                                 tabInnePotrac.addCell(new Phrase(s.getWartosc().toString(),  helvFont10));
@@ -396,25 +393,17 @@ public class PayslipisService {
                         }
                     }
 
-//                        if (dg.getDgKod().equals("GRUPA5") ){
-//                            for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-//                                dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
-//                                if ( dk.getWartosc() != 0 ){
-//                                    tabInneDodat.addCell(new Phrase(dk.getDskNazwa(), helvFont10));
-//                                    tabInneDodat.addCell(new Phrase(dk.getWartosc().toString(),  helvFont10));
-//                                }
-//                            }
-//                        }
+
 
                     if (dg.getDgKod().equals("GRUPA5") ){
                         String dskIdList = "";
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
                             dskIdList += "'"+dk.getGkDskId()+"',";
                         }
 
-                        List<EkSkladnikVO> listSkladniku = hrPasekServiceBean.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
+                        List<EkSkladnikDTO> listSkladniku = skladnikService.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
 
-                        for ( EkSkladnikVO s : listSkladniku ){
+                        for ( EkSkladnikDTO s : listSkladniku ){
                             if ( s.getWartosc() != 0 ){
                                 tabInneDodat.addCell(new Phrase(s.getDskNazwa(), helvFont10));
                                 tabInneDodat.addCell(new Phrase(s.getWartosc().toString(),  helvFont10));
@@ -424,90 +413,90 @@ public class PayslipisService {
 
 
                     if (dg.getDgKod().equals("SKL_3_FIL") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSklad3Filar.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("POD_EM_REN") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSkladPodstEmRen.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("POD_WYP") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSkladPodstWyp.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("POD_CHOR") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSkladPodstChor.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("ZUS_PC_EM") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSkladPracownikEm.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("ZUS_PC_REN") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSkladPracownikRen.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("ZUS_PC_CHO") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSkladPracownikChor.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("ZUS_PD_EM") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSkladPracodawcaEm.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("ZUS_PD_REN") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSkladPracodawcaRen.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("ZUS_PD_WYP") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellSkladPracodawcaWyp.addElement(new Phrase(" " + dk.getWartosc().toString() + '\n' + ' ',  helvFont10));
                         }
                     }
 
                     // tabela 2
                     if (dg.getDgKod().equals("KOSZ_PRZ") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             if ( dk.getWartosc() != 0 ){
                                 cellPotracKUP.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                             }
                         }
                     }
                     if (dg.getDgKod().equals("POD_POD") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellPotracPodstPod.addElement(new Phrase(" " + dk.getWartosc().toString() + '\n' + ' ',  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("BRUTTO") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellPotracBrutto.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("ZAL_NAL") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellPotracZalNalicz.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
@@ -522,13 +511,13 @@ public class PayslipisService {
 
                     if (dg.getDgKod().equals("ULGA") ){
                         String dskIdList = "";
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
                             dskIdList += "'"+dk.getGkDskId()+"',";
                         }
 
-                        List<EkSkladnikVO> listSkladniku = hrPasekServiceBean.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
+                        List<EkSkladnikDTO> listSkladniku = skladnikService.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
 
-                        for ( EkSkladnikVO s : listSkladniku ){
+                        for ( EkSkladnikDTO s : listSkladniku ){
                             if ( s.getWartosc() != 0 ){
                                 cellPotracUlga.addElement(new Phrase(" " + s.getWartosc().toString(),  helvFont10));
                             }
@@ -537,8 +526,8 @@ public class PayslipisService {
 
 
                     if (dg.getDgKod().equals("ZWOL_POD") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellPotracZwolPod.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
@@ -553,13 +542,13 @@ public class PayslipisService {
 
                     if (dg.getDgKod().equals("ZAL_POTR") ){
                         String dskIdList = "";
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
                             dskIdList += "'"+dk.getGkDskId()+"',";
                         }
 
-                        List<EkSkladnikVO> listSkladniku = hrPasekServiceBean.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
+                        List<EkSkladnikDTO> listSkladniku = skladnikService.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
 
-                        for ( EkSkladnikVO s : listSkladniku ){
+                        for ( EkSkladnikDTO s : listSkladniku ){
                             if ( s.getWartosc() != 0 ){
                                 cellPotracZalPotr.addElement(new Phrase(" " + s.getWartosc().toString(),  helvFont10));
                             }
@@ -568,8 +557,8 @@ public class PayslipisService {
 
 
                     if (dg.getDgKod().equals("NA_PRZELEW") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             if ( dk.getWartosc() != 0 ){
                                 cellPotracPrzelew.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                             }
@@ -577,20 +566,20 @@ public class PayslipisService {
                     }
 
                     if (dg.getDgKod().equals("UB_ZD_POD") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellZdrowPodst.addElement(new Phrase(" " + dk.getWartosc().toString() + '\n' + ' ',  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("UB_ZD_SKL1") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellZdrowSkl1.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
                     if (dg.getDgKod().equals("UB_ZD_SKL2") ){
-                        for ( EkGrupyKodowVO dk : dg.getEkGrupyKodow() ){
-                            dk.setWartosc( hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
+                        for ( EkGroupCode dk : dg.getEkGrupyKodow() ){
+                            dk.setWartosc( skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, dk.getGkDskId(), frmId, typeContract) );
                             cellZdrowSkl2.addElement(new Phrase(" " + dk.getWartosc().toString(),  helvFont10));
                         }
                     }
@@ -598,34 +587,34 @@ public class PayslipisService {
                 }
 
                 // get il. day pracownika
-                Long ilDniPrzepracowanych =  hrPasekServiceBean.getDniPrzeprac(p.getPrcId(), periodYYYYMM, frmId);
+                Long ilDniPrzepracowanych =  skladnikService.getDniPrzeprac(p.getPrcId(), periodYYYYMM, frmId);
                 cellSkladLiczbDniPrzeprac.addElement(new Phrase(" " +ilDniPrzepracowanych.toString(),helvFont10));
 
 
                 // get stawka podatkowa
-                Long stawkaPodatkowa = hrPasekServiceBean.getStawkaPodatkowa(p.getPrcId(), periodYYYYMM, frmId);
+                Long stawkaPodatkowa = skladnikService.getStawkaPodatkowa(p.getPrcId(), periodYYYYMM, frmId);
                 cellPotracStawkPod.addElement(new Phrase(" " + stawkaPodatkowa.toString() + '\n' + '.', helvFont10));
 
                 // get Brutto
-                Double wynagrBrutto = hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 610L, frmId, typeContract);
+                Double wynagrBrutto = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 610L, frmId, typeContract);
                 cellPotracBrutto.addElement(new Phrase(" " + wynagrBrutto.toString(),  helvFont10));
 
                 // get Netto
-                Double wynagrNetto = hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 10204L, frmId, typeContract);
+                Double wynagrNetto = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 10204L, frmId, typeContract);
                 cellPotracNetto.addElement(new Phrase(" " + wynagrNetto.toString(),  helvFont10));
 
                 // get DoWyplaty
-                Double wynagrDoWyplaty = hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 999L, frmId, typeContract);
+                Double wynagrDoWyplaty = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 999L, frmId, typeContract);
                 cellPotracDoWyplaty.addElement(new Phrase(" " + wynagrDoWyplaty.toString() + System.lineSeparator() ,  helvFont10));
 
                 // get GodzinyPrzepracowane
-                Double ilGodzPrzeprac = hrPasekServiceBean.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 12464L, frmId, typeContract);
+                Double ilGodzPrzeprac = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 12464L, frmId, typeContract);
                 cellSkladLiczbaGodzPrzeprac.addElement(new Phrase(" " + ilGodzPrzeprac.toString(),  helvFont10));
 
 
 
                 // get liczba dni chorobowego
-                Long liczbaDniChorobowego = hrPasekServiceBean.getLiczbaDniChorob(p.getPrcId(), periodYYYYMM, frmId );
+                Long liczbaDniChorobowego = skladnikService.getLiczbaDniChorob(p.getPrcId(), periodYYYYMM, frmId );
                 cellSkladLiczbaDniChor.addElement(new Phrase(" " + liczbaDniChorobowego.toString(), helvFont10));
 
                 // usupelnic tabele danymi z bazy danych
