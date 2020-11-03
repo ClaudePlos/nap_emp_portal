@@ -52,6 +52,13 @@ public class PayslipisService {
 
     public String PATH = "//home//szeryf//glassfish-4.0//glassfish//domains//domain1//docroot//inaprzod//pdf//"; //change it
 
+    public String przygotujPaski(Long skId, BigDecimal prcId, String okres, BigDecimal frmId, BigDecimal frmKlId, Long typeContract) throws IOException {
+        String path = "";
+        path = generujPasek("paski_prac", skId, prcId, okres, frmId, frmKlId, typeContract);
+        return path;
+    }
+
+
     private String generujPasek(String raportNazwa, Long skId, BigDecimal prcId, String okres, BigDecimal frmId, BigDecimal frmKlId, Long typeContract ) throws IOException {
 
         String fileName = prcId + "_" + typeContract + ".pdf";

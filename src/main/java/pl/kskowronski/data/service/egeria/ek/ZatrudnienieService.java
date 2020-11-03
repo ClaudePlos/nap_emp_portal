@@ -10,11 +10,11 @@ import pl.kskowronski.data.service.egeria.global.ConsolidationService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
@@ -38,6 +38,23 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
 
     @Autowired
     WymiarEtatuRepo wymiarEtatuRepo;
+
+    private SimpleDateFormat dfYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
+
+    public Optional<List<Zatrudnienie>> getActualContractForWorker(Long prcId, String period) throws ParseException {
+        consolidationService.setConsolidateCompany();
+        Date dataOd = dfYYYYMMDD.parse(period + "-01");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dataOd);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH)); //last day month
+        Date dataDo = cal.getTime();
+
+        Optional<List<Zatrudnienie>> contracts = Optional.ofNullable(em.createQuery("select z from Zatrudnienie z where z.zatPrcId = :prcId "
+                + "and z.zatDataZmiany <= :dataDo and COALESCE(z.zatDataDo, :dataOd) >= :dataOd "
+                + "and z.zatTypUmowy = 0")
+                .setParameter("prcId", prcId).setParameter("dataOd", dataOd, TemporalType.DATE).setParameter("dataDo", dataDo, TemporalType.DATE).getResultList());
+        return contracts;
+    }
 
 
 
