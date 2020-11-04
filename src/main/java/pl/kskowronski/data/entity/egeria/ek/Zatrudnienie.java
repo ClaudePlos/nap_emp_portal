@@ -42,7 +42,7 @@ public class Zatrudnienie {
     private String zatAneks;
 
     @Column(name = "zat_prc_id")
-    private Long zatPrcId;
+    private BigDecimal zatPrcId;
 
     @Column(name = "zat_zat_id")
     private Long zatZatId;
@@ -185,11 +185,11 @@ public class Zatrudnienie {
         this.zatAneks = zatAneks;
     }
 
-    public Long getZatPrcId() {
+    public BigDecimal getZatPrcId() {
         return zatPrcId;
     }
 
-    public void setZatPrcId(Long zatPrcId) {
+    public void setZatPrcId(BigDecimal zatPrcId) {
         this.zatPrcId = zatPrcId;
     }
 

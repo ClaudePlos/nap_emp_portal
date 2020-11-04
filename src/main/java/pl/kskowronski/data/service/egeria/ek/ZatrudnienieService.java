@@ -41,7 +41,7 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
 
     private SimpleDateFormat dfYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
 
-    public Optional<List<Zatrudnienie>> getActualContractForWorker(Long prcId, String period) throws ParseException {
+    public Optional<List<Zatrudnienie>> getActualContractForWorker(BigDecimal prcId, String period) throws ParseException {
         consolidationService.setConsolidateCompany();
         Date dataOd = dfYYYYMMDD.parse(period + "-01");
         Calendar cal = Calendar.getInstance();
@@ -52,7 +52,10 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
         Optional<List<Zatrudnienie>> contracts = Optional.ofNullable(em.createQuery("select z from Zatrudnienie z where z.zatPrcId = :prcId "
                 + "and z.zatDataZmiany <= :dataDo and COALESCE(z.zatDataDo, :dataOd) >= :dataOd "
                 + "and z.zatTypUmowy = 0")
-                .setParameter("prcId", prcId).setParameter("dataOd", dataOd, TemporalType.DATE).setParameter("dataDo", dataDo, TemporalType.DATE).getResultList());
+                .setParameter("prcId", prcId)
+                .setParameter("dataOd", dataOd, TemporalType.DATE)
+                .setParameter("dataDo", dataDo, TemporalType.DATE)
+                .getResultList());
         return contracts;
     }
 

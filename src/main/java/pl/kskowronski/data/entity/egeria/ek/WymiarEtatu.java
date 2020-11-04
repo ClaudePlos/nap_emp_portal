@@ -7,7 +7,6 @@ import javax.persistence.*;
 public class WymiarEtatu {
 
     @Id
-    @GeneratedValue
     @Column(name="id")
     private int id;
 
