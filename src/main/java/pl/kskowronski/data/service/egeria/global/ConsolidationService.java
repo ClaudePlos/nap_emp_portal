@@ -24,7 +24,7 @@ public class ConsolidationService {
 
     @Transactional
     public void setConsolidateCompanyOnCompany(BigDecimal frmId) {
-        this.em.createNativeQuery("BEGIN ap_globals.USTAW_firme(" + frmId + "); eap_globals.USTAW_konsolidacje('N'); END;")
+        this.em.createNativeQuery("BEGIN eap_globals.USTAW_firme(" + frmId + "); eap_globals.USTAW_konsolidacje('N'); END;")
                 .executeUpdate();
     }
 

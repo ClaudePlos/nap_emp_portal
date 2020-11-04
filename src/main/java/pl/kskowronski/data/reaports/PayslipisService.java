@@ -101,10 +101,9 @@ public class PayslipisService {
 
             for ( EkDefGroup dg : listEkDefGroup.get() ){
                 Optional<List<EkGroupCode>> listEkGrupyKodow =  ekGroupCodeRepo.findAllByGkDgKodOrderByGkNumer(dg.getDgKod());//hrPasekServiceBean.getEkGrupyKodow(dg.getDgKod());
-                if (!listEkGrupyKodow.isPresent()){
-                    System.out.println("Issue: " + dg.getDgKod());
+                if (listEkGrupyKodow.isPresent()){
+                    dg.setEkGrupyKodow(listEkGrupyKodow.get());
                 }
-                dg.setEkGrupyKodow(listEkGrupyKodow.get());
             }
 
             List<User> listaAktPracNaSkMc = new ArrayList<>();

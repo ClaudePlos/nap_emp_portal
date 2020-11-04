@@ -3,7 +3,6 @@ package pl.kskowronski.views.payslips;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -13,7 +12,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.MapperDate;
-import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracjeDTO;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
 import pl.kskowronski.data.reaports.PayslipisService;
@@ -22,6 +20,9 @@ import pl.kskowronski.views.main.MainView;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class PayslipsView extends VerticalLayout {
                     }
                 }));
 
-        Date now = new Date();
+        Date now =  Date.from(LocalDate.now().minus(1, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
         textPeriod.setValue(mapperDate.dtYYYYMM.format(now));
         add(textPeriod);
 
