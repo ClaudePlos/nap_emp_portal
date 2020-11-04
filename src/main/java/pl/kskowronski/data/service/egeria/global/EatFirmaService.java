@@ -26,6 +26,6 @@ public class EatFirmaService  extends CrudService<EatFirma, BigDecimal> {
         return repo;
     }
 
-    public Optional<EatFirma> findById(BigDecimal frmId){ return findById(frmId);}
+    public Optional<EatFirma> findById(BigDecimal frmId){ return repo.findById(frmId);}
 
 }

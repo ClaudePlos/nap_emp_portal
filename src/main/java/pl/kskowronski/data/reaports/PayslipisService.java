@@ -25,11 +25,13 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import pl.kskowronski.data.entity.egeria.ckk.Client;
 import pl.kskowronski.data.entity.egeria.ek.*;
+import pl.kskowronski.data.entity.egeria.global.EatFirma;
 import pl.kskowronski.data.service.egeria.ckk.ClientService;
 import pl.kskowronski.data.service.egeria.ek.EkDefGroupRepo;
 import pl.kskowronski.data.service.egeria.ek.EkGroupCodeRepo;
 import pl.kskowronski.data.service.egeria.ek.SkladnikService;
 import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
+import pl.kskowronski.data.service.egeria.global.EatFirmaService;
 
 
 @Service
@@ -48,18 +50,21 @@ public class PayslipisService {
     private ZatrudnienieService zatrudnienieService;
 
     @Autowired
+    private EatFirmaService eatFirmaService;
+
+    @Autowired
     SkladnikService skladnikService;
 
-    public String PATH = "//home//szeryf//glassfish-4.0//glassfish//domains//domain1//docroot//inaprzod//pdf//"; //change it
+    public String PATH = "C:\\tmp\\"; //change it
 
-    public String przygotujPaski(Long skId, BigDecimal prcId, String okres, BigDecimal frmId, BigDecimal frmKlId, Long typeContract) throws IOException {
+    public String przygotujPaski(Long skId, BigDecimal prcId, String okres, BigDecimal frmId, Long typeContract) throws IOException {
         String path = "";
-        path = generujPasek("paski_prac", skId, prcId, okres, frmId, frmKlId, typeContract);
+        path = generujPasek("paski_prac", skId, prcId, okres, frmId, typeContract);
         return path;
     }
 
 
-    private String generujPasek(String raportNazwa, Long skId, BigDecimal prcId, String okres, BigDecimal frmId, BigDecimal frmKlId, Long typeContract ) throws IOException {
+    private String generujPasek(String raportNazwa, Long skId, BigDecimal prcId, String okres, BigDecimal frmId, Long typeContract ) throws IOException {
 
         String fileName = prcId + "_" + typeContract + ".pdf";
         String path = "/pdf/" + fileName;
@@ -68,7 +73,8 @@ public class PayslipisService {
 
         Document document = new Document();
 
-        Client frm = clientService.getClientByKlKod(frmKlId).get();
+        Optional<EatFirma> systemCompany = eatFirmaService.findById(frmId);
+        Client frm = clientService.getClientByKlKod(systemCompany.get().getFrmKlId()).get();
 
         try {
             //PdfWriter writer = PdfWriter.getInstance(document, pdfFileout );
@@ -94,8 +100,11 @@ public class PayslipisService {
             Optional<List<EkDefGroup>>listEkDefGroup =  ekDefGroupRepo.findAllByDgDkKodOrderByDgNumer("PASEK");
 
             for ( EkDefGroup dg : listEkDefGroup.get() ){
-                List<EkGroupCode> listEkGrupyKodow =  ekGroupCodeRepo.findAllByGkDgKodOrderByGkNumer(dg.getDgKod()).get();//hrPasekServiceBean.getEkGrupyKodow(dg.getDgKod());
-                dg.setEkGrupyKodow(listEkGrupyKodow);
+                Optional<List<EkGroupCode>> listEkGrupyKodow =  ekGroupCodeRepo.findAllByGkDgKodOrderByGkNumer(dg.getDgKod());//hrPasekServiceBean.getEkGrupyKodow(dg.getDgKod());
+                if (!listEkGrupyKodow.isPresent()){
+                    System.out.println("Issue: " + dg.getDgKod());
+                }
+                dg.setEkGrupyKodow(listEkGrupyKodow.get());
             }
 
             List<User> listaAktPracNaSkMc = new ArrayList<>();

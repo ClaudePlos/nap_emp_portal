@@ -23,7 +23,6 @@ public class Client {
     @Column(name="kld_nazwa")
     private String kldNazwa;
 
-
     @Column(name="kld_nip")
     private String kldNip;
 
@@ -47,46 +46,6 @@ public class Client {
 
     @Column(name="kld_pkd")
     private String kldPkd;
-
-    // address fields
-    @Column(name="adr_woj_id")
-    private BigDecimal adrWojId;
-
-    @Column(name="adr_lp")
-    private BigDecimal adrLp;
-
-    @Column(name="adr_miejscowosc")
-    private String adrMiejscowosc;
-
-    @Column(name="adr_typ_ulicy")
-    private String adrTypUlicy;
-
-    @Column(name="adr_zatwierdzony")
-    private String adrZatwierdzony;
-
-    @Column(name="adr_f_aktualne")
-    private String adrAktualne;
-
-    @Column(name="adr_gmina")
-    private String adrGmina;
-
-    @Column(name="adr_kod_pocztowy")
-    private String adrKodPocztowy;
-
-    @Column(name="adr_ulica")
-    private String adrUlica;
-
-    @Column(name="adr_numer_domu")
-    private String adrNumerDomu;
-
-    @Column(name="adr_numer_lokalu")
-    private String adrNumerLokalu;
-
-    @Column(name="adr_poczta")
-    private String adrPoczta;
-
-    @Column(name="adr_powiat")
-    private String adrPowiat;
 
     public Client() {
     }
@@ -193,109 +152,5 @@ public class Client {
 
     public void setKldPkd(String kldPkd) {
         this.kldPkd = kldPkd;
-    }
-
-    public BigDecimal getAdrWojId() {
-        return adrWojId;
-    }
-
-    public void setAdrWojId(BigDecimal adrWojId) {
-        this.adrWojId = adrWojId;
-    }
-
-    public BigDecimal getAdrLp() {
-        return adrLp;
-    }
-
-    public void setAdrLp(BigDecimal adrLp) {
-        this.adrLp = adrLp;
-    }
-
-    public String getAdrMiejscowosc() {
-        return adrMiejscowosc;
-    }
-
-    public void setAdrMiejscowosc(String adrMiejscowosc) {
-        this.adrMiejscowosc = adrMiejscowosc;
-    }
-
-    public String getAdrTypUlicy() {
-        return adrTypUlicy;
-    }
-
-    public void setAdrTypUlicy(String adrTypUlicy) {
-        this.adrTypUlicy = adrTypUlicy;
-    }
-
-    public String getAdrZatwierdzony() {
-        return adrZatwierdzony;
-    }
-
-    public void setAdrZatwierdzony(String adrZatwierdzony) {
-        this.adrZatwierdzony = adrZatwierdzony;
-    }
-
-    public String getAdrAktualne() {
-        return adrAktualne;
-    }
-
-    public void setAdrAktualne(String adrAktualne) {
-        this.adrAktualne = adrAktualne;
-    }
-
-    public String getAdrGmina() {
-        return adrGmina;
-    }
-
-    public void setAdrGmina(String adrGmina) {
-        this.adrGmina = adrGmina;
-    }
-
-    public String getAdrKodPocztowy() {
-        return adrKodPocztowy;
-    }
-
-    public void setAdrKodPocztowy(String adrKodPocztowy) {
-        this.adrKodPocztowy = adrKodPocztowy;
-    }
-
-    public String getAdrUlica() {
-        return adrUlica;
-    }
-
-    public void setAdrUlica(String adrUlica) {
-        this.adrUlica = adrUlica;
-    }
-
-    public String getAdrNumerDomu() {
-        return adrNumerDomu;
-    }
-
-    public void setAdrNumerDomu(String adrNumerDomu) {
-        this.adrNumerDomu = adrNumerDomu;
-    }
-
-    public String getAdrNumerLokalu() {
-        return adrNumerLokalu;
-    }
-
-    public void setAdrNumerLokalu(String adrNumerLokalu) {
-        this.adrNumerLokalu = adrNumerLokalu;
-    }
-
-    public String getAdrPoczta() {
-        return adrPoczta;
-    }
-
-    public void setAdrPoczta(String adrPoczta) {
-        this.adrPoczta = adrPoczta;
-    }
-
-    public String getAdrPowiat() {
-        return adrPowiat;
-    }
-
-    public void setAdrPowiat(String adrPowiat) {
-        this.adrPowiat = adrPowiat;
     }
 }

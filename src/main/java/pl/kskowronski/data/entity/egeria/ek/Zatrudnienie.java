@@ -105,7 +105,7 @@ public class Zatrudnienie {
     private Long zatStnId;
 
     @Column(name="zat_frm_id")
-    private Long frmId;
+    private BigDecimal frmId;
 
     @Transient
     private WymiarEtatu wymiarEtatu;
@@ -377,11 +377,11 @@ public class Zatrudnienie {
         this.zatStnId = zatStnId;
     }
 
-    public Long getFrmId() {
+    public BigDecimal getFrmId() {
         return frmId;
     }
 
-    public void setFrmId(Long frmId) {
+    public void setFrmId(BigDecimal frmId) {
         this.frmId = frmId;
     }
 
