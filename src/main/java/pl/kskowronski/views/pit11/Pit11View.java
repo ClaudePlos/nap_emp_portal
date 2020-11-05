@@ -54,31 +54,24 @@ public class Pit11View extends HorizontalLayout {
     Label labelXML = new Label();
 
     public Pit11View(@Autowired UserService userService, @Autowired EdktDeklaracjeService edktDeklaracjeService) {
-        setHeight("95%");
+        setHeight("85%");
         this.userService = userService;
         this.edktDeklaracjeService = edktDeklaracjeService;
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<User> worker = userService.findByPassword(userDetails.getPassword());
 
-        //Optional<EdktDeklaracje> dek = edktDeklaracjeService.findByDklId(BigDecimal.valueOf(686L));
-        //System.out.println(dek.get().getDklId());
-        //generatDateInGrid(dek.get());
 
         setId("pit11-view");
 
         this.grid = new Grid<>(EdktDeklaracjeDTO.class);
-        grid.setColumns("dklTdlKod", "dklYear", "dklXmlVisual", "dklFrmNazwa");
+        grid.setColumns("dklTdlKod", "dklFrmNazwa", "dklYear"); //, "dklXmlVisual"
         grid.getColumnByKey("dklTdlKod").setWidth("100px").setHeader("Dek");
         grid.getColumnByKey("dklYear").setWidth("100px").setHeader("Rok");
-        grid.getColumnByKey("dklXmlVisual").setWidth("100px").setHeader("Xml");
+        //grid.getColumnByKey("dklXmlVisual").setWidth("100px").setHeader("Xml");
         grid.getColumnByKey("dklFrmNazwa").setWidth("300px").setHeader("Firma");
-//        grid.setWidthFull();
         grid.setHeightFull();
 
-        //grid.setDataProvider(dataProvider);
-        //grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        //grid.setHeightFull();
 
         List<EdktDeklaracjeDTO> listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId())
                 .stream()

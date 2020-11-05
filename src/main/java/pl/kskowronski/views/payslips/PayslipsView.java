@@ -3,7 +3,9 @@ package pl.kskowronski.views.payslips;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -11,8 +13,11 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ResourceUtils;
 import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
@@ -20,6 +25,9 @@ import pl.kskowronski.data.reaports.PayslipisService;
 import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
 import pl.kskowronski.views.main.MainView;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -128,6 +136,27 @@ public class PayslipsView extends VerticalLayout {
     private void GeneratePayslipiPDF(BigDecimal prcId, BigDecimal frmId) throws IOException {
         String path = this.payslipisServicel.przygotujPaski(null, prcId, textPeriod.getValue(), frmId, Long.parseLong("0"));//0 - full time job, 2 - contract
         System.out.printf(path);
+        displayPayslipsPDFonBrowser(path);
+    }
+
+
+    private void displayPayslipsPDFonBrowser(String path) throws IOException {
+
+        File filePdf = ResourceUtils.getFile(path);
+
+        byte[] pdfBytes = FileUtils.readFileToByteArray(filePdf);
+
+        Dialog dialog = new Dialog();
+        dialog.setWidth("300px");
+        dialog.setHeight("150px");
+
+        StreamResource res = new StreamResource("file.pdf", () -> new ByteArrayInputStream(pdfBytes));
+        Anchor a = new Anchor(res, "kliknij tu by pobrać pasek");
+        a.setTarget( "_blank" ) ;
+
+        dialog.add(a, new Button("Zamknij", e -> dialog.close()));
+        add(dialog);
+        dialog.open();
     }
 
 

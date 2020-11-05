@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,6 +59,14 @@ public class PayslipisService {
     public String PATH = "C:\\tmp\\"; //change it
 
     public String przygotujPaski(Long skId, BigDecimal prcId, String okres, BigDecimal frmId, Long typeContract) throws IOException {
+        ClassLoader cl = this.getClass().getClassLoader();
+        URL url =  cl.getResource("pit11_25.jrxml");
+        String absolutePath = url.getPath() + "\\";
+
+        if (!absolutePath.toUpperCase().substring(1,3).equals("C:")){ //todo better check system operation
+            PATH = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pdf/";
+        }
+
         String path = "";
         path = generujPasek("paski_prac", skId, prcId, okres, frmId, typeContract);
         return path;
@@ -67,7 +76,7 @@ public class PayslipisService {
     private String generujPasek(String raportNazwa, Long skId, BigDecimal prcId, String okres, BigDecimal frmId, Long typeContract ) throws IOException {
 
         String fileName = prcId + "_" + typeContract + ".pdf";
-        String path = "/pdf/" + fileName;
+        String path = PATH + fileName;
         File file = new File(PATH + fileName);
         FileOutputStream pdfFileout = new FileOutputStream(file);
 

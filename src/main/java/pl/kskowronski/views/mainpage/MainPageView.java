@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 @Route(value = "empty", layout = MainView.class)
-@PageTitle("Main Page")
+@PageTitle("Strona główna")
 @CssImport("./styles/views/mainpage/main-page-view.css")
 @RouteAlias(value = "", layout = MainView.class)
 public class MainPageView extends Div {
@@ -33,6 +33,7 @@ public class MainPageView extends Div {
         Optional<User> worker = userService.findByPassword(userDetails.getPassword());
 
         add(new Label("Witaj " + worker.get().getPrcImie() + " " + worker.get().getPrcNazwisko()) );
+        add(new Label("To jest strona przeznaczona dla Ciebie z dostępem do Twoich danych kadrowych. Wkrótce zostanie dodana instrukcja obsługi."));
     }
 
 }
