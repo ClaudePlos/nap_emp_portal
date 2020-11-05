@@ -12,11 +12,11 @@ public class User {
     @Column(name = "PRC_ID")
     private BigDecimal prcId;
 
+    @Column(name = "PRC_NUMER", insertable=false, updatable=false)
+    private String username;
+
     @Column(name = "PRC_NUMER")
     private BigDecimal prcNumer;
-
-    @Column(name = "PRC_DOWOD_OSOB")
-    private String username;
 
     @Column(name = "PRC_PESEL")
     private String password;

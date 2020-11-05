@@ -32,7 +32,7 @@ public class MainPageView extends Div {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<User> worker = userService.findByPassword(userDetails.getPassword());
 
-        add(new Label("Witaj " + worker.get().getPrcImie() + " " + worker.get().getPrcNazwisko()) );
+        add(new Label("Witaj " + worker.get().getPrcImie() + " " + worker.get().getPrcNazwisko()) + ". " );
         add(new Label("To jest strona przeznaczona dla Ciebie z dostępem do Twoich danych kadrowych. Wkrótce zostanie dodana instrukcja obsługi."));
     }
 
