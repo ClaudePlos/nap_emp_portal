@@ -62,7 +62,7 @@ public class SkladnikService  {
         return listComponents;
     }
 
-    public Double getValueFromPayroll( BigDecimal prcId, String periodYYYYMM, Long dskId, BigDecimal frmId, Long typeContract ){
+    public Double getValueFromPayroll( BigDecimal prcId, String periodYYYYMM, BigDecimal dskId, BigDecimal frmId, Long typeContract ){
         String contract = "LPLAC";
         consolidationService.setConsolidateCompanyOnCompany( frmId );
 

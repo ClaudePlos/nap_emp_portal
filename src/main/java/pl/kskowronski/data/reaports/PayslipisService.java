@@ -97,7 +97,7 @@ public class PayslipisService {
             float b = PageSize.A4.getBottom();
             float t = PageSize.A4.getTop();
 
-            Optional<List<EkDefGroup>>listEkDefGroup =  ekDefGroupRepo.findAllByDgDkKodOrderByDgNumer("PASEK");
+            Optional<List<EkDefGroup>> listEkDefGroup =  ekDefGroupRepo.findAllByDgDkKodOrderByDgNumer("PASEK");
 
             for ( EkDefGroup dg : listEkDefGroup.get() ){
                 Optional<List<EkGroupCode>> listEkGrupyKodow =  ekGroupCodeRepo.findAllByGkDgKodOrderByGkNumer(dg.getDgKod());//hrPasekServiceBean.getEkGrupyKodow(dg.getDgKod());
@@ -611,19 +611,19 @@ public class PayslipisService {
                 cellPotracStawkPod.addElement(new Phrase(" " + stawkaPodatkowa.toString() + '\n' + '.', helvFont10));
 
                 // get Brutto
-                Double wynagrBrutto = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 610L, frmId, typeContract);
+                Double wynagrBrutto = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, BigDecimal.valueOf(Long.parseLong("610")), frmId, typeContract);
                 cellPotracBrutto.addElement(new Phrase(" " + wynagrBrutto.toString(),  helvFont10));
 
                 // get Netto
-                Double wynagrNetto = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 10204L, frmId, typeContract);
+                Double wynagrNetto = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, BigDecimal.valueOf(Long.parseLong("10204")), frmId, typeContract);
                 cellPotracNetto.addElement(new Phrase(" " + wynagrNetto.toString(),  helvFont10));
 
                 // get DoWyplaty
-                Double wynagrDoWyplaty = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 999L, frmId, typeContract);
+                Double wynagrDoWyplaty = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, BigDecimal.valueOf(Long.parseLong("999")), frmId, typeContract);
                 cellPotracDoWyplaty.addElement(new Phrase(" " + wynagrDoWyplaty.toString() + System.lineSeparator() ,  helvFont10));
 
                 // get GodzinyPrzepracowane
-                Double ilGodzPrzeprac = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, 12464L, frmId, typeContract);
+                Double ilGodzPrzeprac = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, BigDecimal.valueOf(Long.parseLong("12464")), frmId, typeContract);
                 cellSkladLiczbaGodzPrzeprac.addElement(new Phrase(" " + ilGodzPrzeprac.toString(),  helvFont10));
 
 

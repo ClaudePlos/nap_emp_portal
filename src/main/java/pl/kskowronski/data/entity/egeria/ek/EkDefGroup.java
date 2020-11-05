@@ -9,13 +9,13 @@ import java.util.List;
 public class EkDefGroup {
 
     @Id
-    @Column(name = "DG_KOD", nullable = false)
+    @Column(name = "DG_KOD")
     private String dgKod;
 
-    @Column(name = "DG_NUMER", nullable = false)
+    @Column(name = "DG_NUMER")
     private Long dgNumer;
 
-    @Column(name = "DG_DK_KOD", nullable = false)
+    @Column(name = "DG_DK_KOD")
     private String dgDkKod;
 
     @Transient

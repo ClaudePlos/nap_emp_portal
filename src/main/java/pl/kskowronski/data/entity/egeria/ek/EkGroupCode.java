@@ -1,23 +1,24 @@
 package pl.kskowronski.data.entity.egeria.ek;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name="EK_GRUPY_KODOW")
 public class EkGroupCode {
 
-    @Id
-    @Column(name = "GK_DG_KOD", nullable = false)
+    @Column(name = "GK_DG_KOD")
     private String gkDgKod;
 
-    @Column(name = "GK_DSK_ID", nullable = false)
-    private Long gkDskId;
+    @Id
+    @Column(name = "GK_DSK_ID")
+    private BigDecimal gkDskId;
 
-    @Column(name = "GK_NUMER", nullable = false)
-    private Long gkNumer;
+    @Column(name = "GK_NUMER")
+    private BigDecimal gkNumer;
 
     @Transient
-    private Long dskKod;
+    private BigDecimal dskKod;
 
     @Transient
     private String dskNazwa;
@@ -36,27 +37,27 @@ public class EkGroupCode {
         this.gkDgKod = gkDgKod;
     }
 
-    public Long getGkDskId() {
+    public BigDecimal getGkDskId() {
         return gkDskId;
     }
 
-    public void setGkDskId(Long gkDskId) {
+    public void setGkDskId(BigDecimal gkDskId) {
         this.gkDskId = gkDskId;
     }
 
-    public Long getGkNumer() {
+    public BigDecimal getGkNumer() {
         return gkNumer;
     }
 
-    public void setGkNumer(Long gkNumer) {
+    public void setGkNumer(BigDecimal gkNumer) {
         this.gkNumer = gkNumer;
     }
 
-    public Long getDskKod() {
+    public BigDecimal getDskKod() {
         return dskKod;
     }
 
-    public void setDskKod(Long dskKod) {
+    public void setDskKod(BigDecimal dskKod) {
         this.dskKod = dskKod;
     }
 
