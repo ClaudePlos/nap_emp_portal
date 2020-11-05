@@ -110,6 +110,9 @@ public class Zatrudnienie {
     @Transient
     private WymiarEtatu wymiarEtatu;
 
+    @Transient
+    private String frmNazwa;
+
     public Zatrudnienie() {
     }
 
@@ -391,5 +394,13 @@ public class Zatrudnienie {
 
     public void setWymiarEtatu(WymiarEtatu wymiarEtatu) {
         this.wymiarEtatu = wymiarEtatu;
+    }
+
+    public String getFrmNazwa() {
+        return frmNazwa;
+    }
+
+    public void setFrmNazwa(String frmNazwa) {
+        this.frmNazwa = frmNazwa;
     }
 }

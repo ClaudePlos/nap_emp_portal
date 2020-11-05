@@ -1,11 +1,13 @@
 package pl.kskowronski.views.payslips;
 
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -19,6 +21,7 @@ import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
 import pl.kskowronski.views.main.MainView;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -37,6 +40,9 @@ public class PayslipsView extends VerticalLayout {
     private MapperDate mapperDate = new MapperDate();
 
     private Grid<Zatrudnienie> gridContracts;
+
+    private Button butPlus = new Button("+");
+    private Button butMinus = new Button("-");
     private TextField textPeriod = new TextField("Okres");
 
     private User worker;
@@ -45,35 +51,83 @@ public class PayslipsView extends VerticalLayout {
 
     public PayslipsView(@Autowired ZatrudnienieService zatrudnienieService, @Autowired PayslipisService payslipisService) throws ParseException {
         setId("payslips-view");
+        setHeight("80%");
         this.zatrudnienieService = zatrudnienieService;
         this.payslipisServicel = payslipisService;
         VaadinSession session = VaadinSession.getCurrent();
         worker = session.getAttribute(User.class);
 
         this.gridContracts = new Grid<>(Zatrudnienie.class);
-        gridContracts.setColumns("zatDataPrzyj", "zatDataZmiany", "zatDataDo", "frmId");
+        gridContracts.setColumns("frmNazwa","zatDataPrzyj", "zatDataZmiany", "zatDataDo");
+        gridContracts.setHeightFull();
 
         gridContracts.addColumn(new NativeButtonRenderer<Zatrudnienie>("Pasek",
                 item -> {
                     try {
-                        String path = payslipisService.przygotujPaski(null,item.getZatPrcId(), textPeriod.getValue(), item.getFrmId(), Long.parseLong("0")); //0 - full time job, 2 - contract
-                        System.out.printf(path);
+                        GeneratePayslipiPDF(item.getZatPrcId(), item.getFrmId());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }));
 
+
+
+
         Date now =  Date.from(LocalDate.now().minus(1, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
         textPeriod.setValue(mapperDate.dtYYYYMM.format(now));
-        add(textPeriod);
+        textPeriod.addThemeVariants(TextFieldVariant.LUMO_ALIGN_CENTER);
+        butPlus.setWidth("5px");
+        butPlus.addClickListener(event ->{
+            Long mc = Long.parseLong(textPeriod.getValue().substring(textPeriod.getValue().length()-2));
+            if ( mc < 12 ){
+                mc++; String mcS = "0" + mc;
+                textPeriod.setValue(textPeriod.getValue().substring(0,5) + mcS.substring(mcS.length()-2) );
+            } else {
+                Long year = Long.parseLong(textPeriod.getValue().substring(0,4));
+                year++;
+                textPeriod.setValue(year + "-01" );
+            }
+            try {
+                getCotractForPeriod();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
+        butMinus.addClickListener(event ->{
+            Long mc = Long.parseLong(textPeriod.getValue().substring(textPeriod.getValue().length()-2));
+            if ( mc > 1 ){
+                mc--; String mcS = "0" + mc;
+                textPeriod.setValue(textPeriod.getValue().substring(0,5) + mcS.substring(mcS.length()-2) );
+            } else {
+                Long year = Long.parseLong(textPeriod.getValue().substring(0,4));
+                year--;
+                textPeriod.setValue(year + "-12" );
+            }
+            try {
+                getCotractForPeriod();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
+        add(butMinus, textPeriod, butPlus);
 
+
+        add(gridContracts);
+        getCotractForPeriod();
+
+    }
+
+    private void getCotractForPeriod() throws ParseException {
         Optional<List<Zatrudnienie>> contracts = zatrudnienieService.getActualContractForWorker(worker.getPrcId(), textPeriod.getValue());
         if (!contracts.isPresent()){
             Notification.show("Brak umów w danym okresie", 3000, Notification.Position.MIDDLE);
         }
         gridContracts.setItems(contracts.get());
-        add(gridContracts);
+    }
 
+    private void GeneratePayslipiPDF(BigDecimal prcId, BigDecimal frmId) throws IOException {
+        String path = this.payslipisServicel.przygotujPaski(null, prcId, textPeriod.getValue(), frmId, Long.parseLong("0"));//0 - full time job, 2 - contract
+        System.out.printf(path);
     }
 
 

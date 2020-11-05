@@ -7,6 +7,7 @@ import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.entity.egeria.ek.WymiarEtatu;
 import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
 import pl.kskowronski.data.service.egeria.global.ConsolidationService;
+import pl.kskowronski.data.service.egeria.global.EatFirmaService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -39,6 +40,9 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
     @Autowired
     WymiarEtatuRepo wymiarEtatuRepo;
 
+    @Autowired
+    EatFirmaService eatFirmaService;
+
     private SimpleDateFormat dfYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
 
     public Optional<List<Zatrudnienie>> getActualContractForWorker(BigDecimal prcId, String period) throws ParseException {
@@ -56,6 +60,9 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
                 .setParameter("dataOd", dataOd, TemporalType.DATE)
                 .setParameter("dataDo", dataDo, TemporalType.DATE)
                 .getResultList());
+        if ( contracts.isPresent() ){
+            contracts.get().stream().forEach( z -> z.setFrmNazwa(eatFirmaService.findById(z.getFrmId()).get().getFrmNazwa()));
+        }
         return contracts;
     }
 
