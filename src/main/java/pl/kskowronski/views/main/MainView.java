@@ -25,7 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.kskowronski.data.entity.egeria.ek.User;
+import pl.kskowronski.data.entity.egeria.global.NapUser;
 import pl.kskowronski.data.service.egeria.ek.UserService;
+import pl.kskowronski.data.service.egeria.global.NapUserService;
 import pl.kskowronski.views.mainpage.MainPageView;
 import pl.kskowronski.views.absences.AllAboutAbsencesView;
 import pl.kskowronski.views.cardlist.CardListView;
@@ -44,7 +46,7 @@ public class MainView extends AppLayout {
     private final Tabs menu;
     private H1 viewTitle;
 
-    public MainView(@Autowired UserService userService) {
+    public MainView(@Autowired UserService userService, @Autowired NapUserService napUserService) {
         //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //System.out.println(userDetails.getUsername());
         setPrimarySection(Section.DRAWER);
@@ -53,7 +55,7 @@ public class MainView extends AppLayout {
         addToDrawer(createDrawerContent(menu));
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<User> worker = userService.findByPassword(userDetails.getPassword());
+        Optional<User> worker = userService.findByUsername(userDetails.getUsername());
         VaadinSession session = VaadinSession.getCurrent();
         session.setAttribute(User.class, worker.get());
     }

@@ -22,10 +22,10 @@ public class UserService extends CrudService<User, BigDecimal> {
         return repo;
     }
 
-    public Optional<User> findById(BigDecimal prcId){
-        return repo.findById(prcId);
-    }
+    public Optional<User> findById(BigDecimal prcId){ return repo.findById(prcId); }
 
-    public Optional<User> findByPassword(String pesel){ return repo.findByPassword(pesel);};
+    public Optional<User> findByUsername(String username){ return repo.findByUsername(username);}
+
+    public Optional<User> findByPassword(String pesel){ return repo.findByPassword(pesel);}
 
 }

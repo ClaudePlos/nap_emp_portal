@@ -30,6 +30,9 @@ public class User {
     @Column(name = "PRC_NAZWISKO")
     private String prcNazwisko;
 
+    @Column(name = "PRC_DG_KOD_EK")
+    private String prcDgKodEk;
+
     @Transient
     private List<Zatrudnienie> zatrudnienia;
 
@@ -104,5 +107,11 @@ public class User {
         this.zatrudnienia = zatrudnienia;
     }
 
+    public String getPrcDgKodEk() {
+        return prcDgKodEk;
+    }
 
+    public void setPrcDgKodEk(String prcDgKodEk) {
+        this.prcDgKodEk = prcDgKodEk;
+    }
 }

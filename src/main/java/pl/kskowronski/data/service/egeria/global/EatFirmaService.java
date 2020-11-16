@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
-public class EatFirmaService  extends CrudService<EatFirma, BigDecimal> {
+public class EatFirmaService extends CrudService<EatFirma, BigDecimal> {
 
     private EatFirmaRepo repo;
 

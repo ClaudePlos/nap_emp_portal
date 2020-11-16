@@ -59,7 +59,7 @@ public class Pit11View extends HorizontalLayout {
         this.edktDeklaracjeService = edktDeklaracjeService;
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<User> worker = userService.findByPassword(userDetails.getPassword());
+        Optional<User> worker = userService.findByUsername(userDetails.getUsername());
 
 
         setId("pit11-view");
