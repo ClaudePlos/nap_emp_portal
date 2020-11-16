@@ -44,7 +44,7 @@ import java.util.Optional;
 public class PayslipsView extends VerticalLayout {
 
     private ZatrudnienieService zatrudnienieService;
-    private PayslipisService payslipisServicel;
+    private PayslipisService payslipisService;
     private MapperDate mapperDate = new MapperDate();
 
     private Grid<Zatrudnienie> gridContracts;
@@ -61,7 +61,7 @@ public class PayslipsView extends VerticalLayout {
         setId("payslips-view");
         setHeight("80%");
         this.zatrudnienieService = zatrudnienieService;
-        this.payslipisServicel = payslipisService;
+        this.payslipisService = payslipisService;
         VaadinSession session = VaadinSession.getCurrent();
         worker = session.getAttribute(User.class);
 
@@ -71,11 +71,31 @@ public class PayslipsView extends VerticalLayout {
 
         gridContracts.addColumn(new NativeButtonRenderer<Zatrudnienie>("Pasek",
                 item -> {
+                    Date periodNow  = null;
+                    Date periodParam = null;
                     try {
-                        GeneratePayslipiPDF(item.getZatPrcId(), item.getFrmId());
-                    } catch (IOException e) {
+                        periodNow = Date.from(LocalDate.now().minus(1, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                        periodParam = mapperDate.dtYYYYMM.parse(textPeriod.getValue());
+                    } catch (ParseException e) {
                         e.printStackTrace();
                     }
+
+                    if ( periodParam.before(periodNow) ) {
+
+                        if (mapperDate.dtYYYYMM.format(periodNow).equals(textPeriod.getValue()) && Long.parseLong(mapperDate.dtDD.format(periodNow)) < 10L){
+                            Notification.show("Pasek jeszcze niedostępny. Pasek za ostatni miesiąc będzie dostępny po 10 danego miesiąca.", 5000, Notification.Position.MIDDLE);
+                            return;
+                        }
+
+                        try {
+                            GeneratePayslipiPDF(item.getZatPrcId(), item.getFrmId());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Notification.show("Pasek jeszcze niedostępny. Pasek za ostatni miesiąc będzie dostępny po 10 danego miesiąca.", 5000, Notification.Position.MIDDLE);
+                    }
+
                 }));
 
 
@@ -134,7 +154,7 @@ public class PayslipsView extends VerticalLayout {
     }
 
     private void GeneratePayslipiPDF(BigDecimal prcId, BigDecimal frmId) throws IOException {
-        String path = this.payslipisServicel.przygotujPaski(null, prcId, textPeriod.getValue(), frmId, Long.parseLong("0"));//0 - full time job, 2 - contract
+        String path = this.payslipisService.przygotujPaski(null, prcId, textPeriod.getValue(), frmId, Long.parseLong("0"));//0 - full time job, 2 - contract
         System.out.printf(path);
         displayPayslipsPDFonBrowser(path);
     }
