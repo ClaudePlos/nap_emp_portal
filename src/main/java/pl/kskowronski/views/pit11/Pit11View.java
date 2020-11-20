@@ -7,7 +7,9 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.ResourceUtils;
+import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracjeDTO;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.reaports.Pit11Service;
@@ -29,6 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.List;
@@ -37,7 +41,7 @@ import java.util.stream.Collectors;
 
 @Route(value = "Pit11", layout = MainView.class)
 @PageTitle("Pit11")
-public class Pit11View extends HorizontalLayout {
+public class Pit11View extends VerticalLayout {
 
     private Grid<EdktDeklaracjeDTO> grid;
 
@@ -51,15 +55,34 @@ public class Pit11View extends HorizontalLayout {
     SimpleDateFormat dtYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat dtYYYY = new SimpleDateFormat("yyyy");
 
+    MapperDate mapperDate = new MapperDate();
+
     Label labelXML = new Label();
+    NumberField yearField = new NumberField();
+
+    private Optional<User> worker;
 
     public Pit11View(@Autowired UserService userService, @Autowired EdktDeklaracjeService edktDeklaracjeService) {
         setHeight("85%");
         this.userService = userService;
         this.edktDeklaracjeService = edktDeklaracjeService;
 
+        yearField.setLabel("Rok");
+        yearField.getElement().setProperty("title", "Test");
+        yearField.setHasControls(true);
+        yearField.setValue(Double.parseDouble(Long.parseLong(mapperDate.getCurrentlyYear())-1L + ""));
+        yearField.addValueChangeListener( e-> {
+            try {
+                onUserChangedYear( String.valueOf(e.getValue().intValue()));
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        });
+        add(yearField);
+        setHorizontalComponentAlignment(Alignment.START, yearField);
+
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<User> worker = userService.findByUsername(userDetails.getUsername());
+        worker = userService.findByUsername(userDetails.getUsername());
 
 
         setId("pit11-view");
@@ -73,13 +96,7 @@ public class Pit11View extends HorizontalLayout {
         grid.setHeightFull();
 
 
-        List<EdktDeklaracjeDTO> listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId())
-                .stream()
-                .filter( i -> i.getDklStatus().equals(BigDecimal.valueOf(50L))) // status have UPO
-                .sorted(Comparator.comparing(EdktDeklaracjeDTO::getDklDataOd).reversed())
-                .collect(Collectors.toList());
 
-        grid.setItems(listEDeklaracje);
 
         // run generate pit pdf
         grid.addColumn(new NativeButtonRenderer<EdktDeklaracjeDTO>("Pit11",
@@ -111,9 +128,11 @@ public class Pit11View extends HorizontalLayout {
             labelXML.setText(event.getItem().getDklXmlVisual());
         });
 
+        onUserChangedYear(Long.parseLong(mapperDate.getCurrentlyYear())-1L + "");
+
     }
 
-    private void generatDateInGrid(EdktDeklaracjeDTO item){
+    private void generateDateInGrid(EdktDeklaracjeDTO item){
         grid.setItems(item);
     }
 
@@ -136,7 +155,20 @@ public class Pit11View extends HorizontalLayout {
         dialog.open();
     }
 
+    private void onUserChangedYear(String year){
+        List<EdktDeklaracjeDTO> listEDeklaracje = null;
+        try {
+            listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId(), year)
+                    .stream()
+                    .filter( i -> i.getDklStatus().equals(BigDecimal.valueOf(50L)) || i.getDklStatus().equals(BigDecimal.valueOf(40L))) // status have UPO
+                    .sorted(Comparator.comparing(EdktDeklaracjeDTO::getDklDataOd).reversed())
+                    .collect(Collectors.toList());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
+        grid.setItems(listEDeklaracje);
+    }
 
     private void createGridLayout(SplitLayout splitLayout) {
         Div wrapper = new Div();

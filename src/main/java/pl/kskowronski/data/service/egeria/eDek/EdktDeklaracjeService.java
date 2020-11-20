@@ -3,11 +3,13 @@ package pl.kskowronski.data.service.egeria.eDek;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
+import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracje;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracjeDTO;
 import pl.kskowronski.data.service.egeria.global.EatFirmaRepo;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +34,17 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
         return repo;
     }
 
+    MapperDate mapperDate = new MapperDate();
+
     public Optional<EdktDeklaracje> findByDklId(BigDecimal dklId){
         repo.setConsolidate();
         return repo.findByDklId(dklId);
     };
 
-    public List<EdktDeklaracjeDTO> findAllByDklPrcId(BigDecimal prcId){
+    public List<EdktDeklaracjeDTO> findAllByDklPrcId(BigDecimal prcId, String year) throws ParseException {
         repo.setConsolidate();
-        Optional<List<EdktDeklaracje>> listDek = repo.findAllByDklPrcId(prcId);
+        Optional<List<EdktDeklaracje>> listDek = repo.findAllByDklPrcIdForYear(prcId, mapperDate.dtYYYYMMDD.parse(year+"-01-01")
+                , mapperDate.dtYYYYMMDD.parse(year+"-12-31"));
         List<EdktDeklaracjeDTO> listDekDTO = new ArrayList<>();
         listDek.get().stream().forEach( item -> listDekDTO.add( mapperEdktDeklaracje(item)));
         return listDekDTO;
