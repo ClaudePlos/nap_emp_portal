@@ -41,12 +41,14 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
         return repo.findByDklId(dklId);
     };
 
-    public List<EdktDeklaracjeDTO> findAllByDklPrcId(BigDecimal prcId, String year) throws ParseException {
+    public Optional<List<EdktDeklaracjeDTO>> findAllByDklPrcId(BigDecimal prcId, String year) throws ParseException {
         repo.setConsolidate();
         Optional<List<EdktDeklaracje>> listDek = repo.findAllByDklPrcIdForYear(prcId, mapperDate.dtYYYYMMDD.parse(year+"-01-01")
                 , mapperDate.dtYYYYMMDD.parse(year+"-12-31"));
-        List<EdktDeklaracjeDTO> listDekDTO = new ArrayList<>();
-        listDek.get().stream().forEach( item -> listDekDTO.add( mapperEdktDeklaracje(item)));
+        Optional<List<EdktDeklaracjeDTO>> listDekDTO = Optional.of(new ArrayList<>());
+        if (listDek.isPresent()){
+            listDek.get().stream().forEach( item -> listDekDTO.get().add( mapperEdktDeklaracje(item)));
+        }
         return listDekDTO;
     };
 

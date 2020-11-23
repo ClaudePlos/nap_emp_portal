@@ -6,6 +6,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -156,18 +158,21 @@ public class Pit11View extends VerticalLayout {
     }
 
     private void onUserChangedYear(String year){
-        List<EdktDeklaracjeDTO> listEDeklaracje = null;
         try {
-            listEDeklaracje = edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId(), year)
-                    .stream()
-                    .filter( i -> i.getDklStatus().equals(BigDecimal.valueOf(50L)) || i.getDklStatus().equals(BigDecimal.valueOf(40L))) // status have UPO
-                    .sorted(Comparator.comparing(EdktDeklaracjeDTO::getDklDataOd).reversed())
-                    .collect(Collectors.toList());
+            Optional<List<EdktDeklaracjeDTO>> listEDeklaracje =  edktDeklaracjeService.findAllByDklPrcId(worker.get().getPrcId(), year);
+            if (listEDeklaracje.get().size() != 0){
+                listEDeklaracje.get()
+                        .stream()
+                        .filter( i -> i.getDklStatus().equals(BigDecimal.valueOf(50L)) || i.getDklStatus().equals(BigDecimal.valueOf(40L))) // status have UPO
+                        .sorted(Comparator.comparing(EdktDeklaracjeDTO::getDklDataOd).reversed())
+                        .collect(Collectors.toList());
+            } else {
+                Notification.show("Brak deklaracji w roku: " + year, 3000, Notification.Position.MIDDLE);
+            }
+            grid.setItems(listEDeklaracje.get());
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        grid.setItems(listEDeklaracje);
     }
 
     private void createGridLayout(SplitLayout splitLayout) {
