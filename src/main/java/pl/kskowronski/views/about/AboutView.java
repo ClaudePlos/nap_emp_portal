@@ -23,6 +23,7 @@ public class AboutView extends Div {
         String initFunction = "createHandsontable($0, $1);";
         UI.getCurrent().getPage().executeJs(initFunction, this, "ks-test");
 
+
         logElementSize("klaud");
     }
 
