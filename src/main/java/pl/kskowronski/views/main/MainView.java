@@ -31,6 +31,7 @@ import pl.kskowronski.views.mainpage.MainPageView;
 import pl.kskowronski.views.absences.AllAboutAbsencesView;
 import pl.kskowronski.views.about.AboutView;
 import pl.kskowronski.views.payslips.PayslipsView;
+import pl.kskowronski.views.payslipsJS.PayslipsJsView;
 import pl.kskowronski.views.pit11.Pit11View;
 
 /**
@@ -114,7 +115,8 @@ public class MainView extends AppLayout {
             createTab("Pit11", Pit11View.class),
             createTab("Paski", PayslipsView.class),
             //createTab("Ocena 360", CardListView.class),
-            //createTab("Master-Detail", MasterDetailView.class),
+            //createTab("Master-Detail", MasterDetailView.class)
+            createTab("PaskiJS", PayslipsJsView.class),
             createTab("About", AboutView.class)
         };
     }
