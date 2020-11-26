@@ -13,15 +13,15 @@ import pl.kskowronski.views.main.MainView;
 @Route(value = "about", layout = MainView.class)
 @PageTitle("About")
 @CssImport("./styles/views/about/about-view.css")
-@JavaScript("./js/test.js")
+//@JavaScript("./js/test.js")
 public class AboutView extends Div {
 
     public AboutView() {
         setId("about-view");
         add(new Label("Content made by k.skowronski"));
 
-        String initFunction = "createHandsontable($0, $1);";
-        UI.getCurrent().getPage().executeJs(initFunction, this, "ks-test");
+        //String initFunction = "createHandsontable($0, $1);";
+        //UI.getCurrent().getPage().executeJs(initFunction, this, "ks-test");
 
 
         logElementSize("klaud");
