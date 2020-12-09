@@ -3,15 +3,16 @@ package pl.kskowronski.data.service.egeria.ek;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
-import pl.kskowronski.data.entity.egeria.ek.User;
-import pl.kskowronski.data.entity.egeria.ek.WymiarEtatu;
-import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
+import pl.kskowronski.data.MapperDate;
+import pl.kskowronski.data.entity.egeria.ek.*;
 import pl.kskowronski.data.service.egeria.global.ConsolidationService;
 import pl.kskowronski.data.service.egeria.global.EatFirmaService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TemporalType;
+import javax.xml.ws.Response;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,6 +46,8 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
 
     private SimpleDateFormat dfYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
 
+    private MapperDate mapperDate = new MapperDate();
+
     public Optional<List<Zatrudnienie>> getActualContractForWorker(BigDecimal prcId, String period) throws ParseException {
         consolidationService.setConsolidateCompany();
         Date dataOd = dfYYYYMMDD.parse(period + "-01");
@@ -65,8 +68,6 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
         }
         return contracts;
     }
-
-
 
     public List<User> getPracownikZatrudNaSkMc(BigDecimal prcIdForm, String okres, BigDecimal frmId, Long typeContract ){
         consolidationService.setConsolidateCompanyOnCompany(frmId);
@@ -108,5 +109,149 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
         return listaAktPracNaSk;
     }
 
+    public ListaPlacDTO getlPlacNaglowek(BigDecimal prcId, Date okres, BigDecimal frmId){
+        consolidationService.setConsolidateCompanyOnCompany(frmId);
+        ListaPlacDTO lP = new ListaPlacDTO();
+
+        String sql = "select distinct lst_numer, to_char(lst_data_obliczen,'MM-YYYY') za_mc, to_char(lst_data_wyplaty,'DD-MM-YYYY')\n" +
+                "from EK_GRUPY_KODOW, ek_skladniki, ek_listy, ek_def_skladnikow \n" +
+                "where sk_dsk_id = dsk_id\n" +
+                "and sk_lst_id = lst_id \n" +
+                "and gk_dsk_id = dsk_id\n" +
+                "and lst_drl_kod = 'LPLAC'\n" +
+                "and sk_prc_id = " + prcId + "\n" +
+                "and sk_Wartosc != 0\n" +
+                "and lst_lst_id_korekta is null\n" +
+                "and to_char(lst_data_obliczen,'YYYY-MM') ='"+ mapperDate.dtYYYYMM.format(okres) +"'";
+        try{
+            Object[] ob = (Object[]) em.createNativeQuery(sql).getSingleResult();
+
+            lP.setLSTnumber( (String) ob[0] );
+            lP.setZaMsc((String) ob[1]);
+            lP.setDataWypl( (String) ob[2]);
+
+        }catch (Exception e){
+            throw new RuntimeException("Nie moge pobrac listy płac dla pracownika err-79we351 param: prcid:" + prcId);
+        }
+        return lP;
+    }
+
+    public List<ListaPlacWartKolumnyDTO> getLPlacWartKol(BigDecimal prcId, Date okres, String kol, BigDecimal frmId){
+        consolidationService.setConsolidateCompanyOnCompany(frmId);
+        List<Object[]> lPW = null;
+        List<ListaPlacWartKolumnyDTO> lWartKolumny = new ArrayList<ListaPlacWartKolumnyDTO>();
+
+        String sql = "select dsk_skrot, sk_wartosc from EK_GRUPY_KODOW, ek_skladniki, ek_listy, ek_def_skladnikow \n" +
+                "where sk_dsk_id = dsk_id\n" +
+                "and sk_lst_id = lst_id \n" +
+                "and gk_dsk_id = dsk_id\n" +
+                "and lst_drl_kod = 'LPLAC'\n" +
+                "and gk_dg_kod = '"+ kol +"'\n" +
+                "and sk_prc_id = "+ prcId +"\n" +
+                "and sk_Wartosc != 0\n" +
+                "and lst_lst_id_korekta is null\n" +
+                "and to_char(lst_data_obliczen,'YYYY-MM') = '"+ mapperDate.dtYYYYMM.format(okres) +"'\n" +
+                "order by gk_numer";
+
+        try{
+
+            Query query = em.createNativeQuery(sql);
+            lPW = query.getResultList();
+
+            for(Object[] l : lPW) {
+                ListaPlacWartKolumnyDTO lP = new ListaPlacWartKolumnyDTO();
+                lP.setDskSkrot((String) l[0]);
+                lP.setSkWartosc((BigDecimal) l[1]);
+                lP.setKolumna(kol);
+                lWartKolumny.add(lP);
+            }
+
+        }catch (Exception e){
+            throw new RuntimeException("Nie moge pobrac listy płac dla pracownika err-79we351 param: prcid:" + prcId);
+        }
+
+        return lWartKolumny;
+    }
+
+    public List<ListaPlacWartKolumnyDTO> getListPlacWartKol8(BigDecimal prcId, Date okres, BigDecimal frmId)
+    {
+        consolidationService.setConsolidateCompanyOnCompany(frmId);
+        Object[] lPW = null;
+        List<ListaPlacWartKolumnyDTO> lWartKolumny = new ArrayList<ListaPlacWartKolumnyDTO>();
+
+        String sql = "select to_char(zat_status/10)||ek_pck_niepelnosprawnosc.najlepsza_na_dzien(zat_prc_id,last_day(lst_data_wyplaty))\n" +
+                " , to_char((select SUBSTR(wsl_alias,1,3)/SUBSTR(wsl_alias,4,6) from css_wartosci_slownikow where wsl_sl_nazwa like 'TYP_ETATU' and wsl_wartosc = zat_wymiar)) etat\n" +
+                "   from ek_zatrudnienie,ek_skladniki,ek_listy\n" +
+                "   where sk_zat_id = zat_id\n" +
+                "   and sk_lst_id = lst_id\n" +
+                "   and to_char(lst_data_obliczen,'YYYY-MM') = '"+ mapperDate.dtYYYYMM.format(okres) +"'\n" +
+                "   and LST_DRL_KOD = 'LPLAC'\n" +
+                "   and lst_lst_id_korekta is null\n" +
+                "   and zat_prc_id = " + prcId +"\n" +
+                "   and rownum = 1 ";
+
+        try{
+
+            Query query = em.createNativeQuery(sql);
+            lPW = (Object[]) query.getSingleResult();
+
+
+            ListaPlacWartKolumnyDTO lP = new ListaPlacWartKolumnyDTO();
+            lP.setDskSkrot("Kod ubezp:");
+            lP.setKolumna("KOL8");
+            lP.setOpis((String) lPW[0]);
+            lWartKolumny.add(lP);
+
+            ListaPlacWartKolumnyDTO lP1 = new ListaPlacWartKolumnyDTO();
+            lP1.setDskSkrot("Etat:");
+            lP1.setKolumna("KOL8");
+            lP1.setOpis((String) lPW[1]);
+            lWartKolumny.add(lP1);
+
+
+        }catch ( Exception e ) {
+            throw new RuntimeException("Nie moge pobrac getListPlacWartKol8 param: prcid:" + prcId + " sql:" + sql);
+        }
+
+        return lWartKolumny;
+    }
+
+    public List<ListaPlacWartKolumnyDTO> getListPlacWartKol8PrzelKasa(BigDecimal prcId, Date okres, BigDecimal frmId)
+    {
+        consolidationService.setConsolidateCompanyOnCompany(frmId);
+        List<Object[]> lPW = null;
+        List<ListaPlacWartKolumnyDTO> lWartKolumny = new ArrayList<ListaPlacWartKolumnyDTO>();
+
+        String sql = "select distinct dsk_skrot, to_char(sk_wartosc) from EK_GRUPY_KODOW, ek_skladniki, ek_listy, ek_def_skladnikow \n" +
+                "where sk_dsk_id = dsk_id\n" +
+                "and sk_lst_id = lst_id \n" +
+                "and gk_dsk_id = dsk_id\n" +
+                "and lst_drl_kod = 'LPLAC'\n" +
+                "and sk_dsk_id in (200,999)\n" +
+                "and sk_prc_id = "+ prcId +"\n" +
+                "and sk_Wartosc != 0\n" +
+                "and lst_lst_id_korekta is null\n" +
+                "and to_char(lst_data_obliczen,'YYYY-MM') = '"+ mapperDate.dtYYYYMM.format(okres) +"'";
+        // "order by gk_numer";
+
+        try{
+
+            Query query = em.createNativeQuery(sql);
+            lPW = query.getResultList();
+
+            for(Object[] l : lPW){
+                ListaPlacWartKolumnyDTO lP = new ListaPlacWartKolumnyDTO();
+                lP.setDskSkrot((String) l[0]);
+                lP.setOpis((String) l[1]);
+                lP.setKolumna("KOL8");
+                lWartKolumny.add(lP);
+            }
+
+        }catch ( Exception e ) {
+            throw new RuntimeException("Nie moge pobrac listy płac dla pracownika err-79we351 param: prcid:" + prcId);
+        }
+
+        return lWartKolumny;
+    }
 
 }
