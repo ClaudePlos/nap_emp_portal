@@ -18,10 +18,10 @@ public class User {
     @Column(name = "PRC_NUMER")
     private BigDecimal prcNumer;
 
-    @Column(name = "PRC_PESEL")
+    @Column(name = "PRC_IDENTYFIKACJA")
     private String password;
 
-    @Column(name = "PRC_PESEL", insertable=false, updatable=false)
+    @Column(name = "PRC_PESEL")
     private String prcPesel;
 
     @Column(name = "PRC_IMIE")
