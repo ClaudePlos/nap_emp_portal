@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.ek.*;
+import pl.kskowronski.data.service.egeria.css.JORepo;
 import pl.kskowronski.data.service.egeria.global.ConsolidationService;
 import pl.kskowronski.data.service.egeria.global.EatFirmaService;
 
@@ -12,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
-import javax.xml.ws.Response;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,6 +42,9 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
     WymiarEtatuRepo wymiarEtatuRepo;
 
     @Autowired
+    JORepo joRepo;
+
+    @Autowired
     EatFirmaService eatFirmaService;
 
     private SimpleDateFormat dfYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
@@ -64,7 +67,11 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
                 .setParameter("dataDo", dataDo, TemporalType.DATE)
                 .getResultList());
         if ( contracts.isPresent() ){
-            contracts.get().stream().forEach( z -> z.setFrmNazwa(eatFirmaService.findById(z.getFrmId()).get().getFrmNazwa()));
+            contracts.get().stream().forEach( z -> {
+                z.setFrmNazwa(eatFirmaService.findById(z.getFrmId()).get().getFrmNazwa());
+                z.setWymiarEtatu(wymiarEtatuRepo.findById(Integer.parseInt((z.getZatWymiar()).toString())).get());
+                z.setJoName(joRepo.findById(z.getZatObId()).get().getObNazwa());
+            });
         }
         return contracts;
     }

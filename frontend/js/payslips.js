@@ -3,17 +3,21 @@ import * as pdfFonts from './dist/vfs_fonts.js';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 let allTableData = [];
+let sizeCell = 28;
 
-
-function generatePaySlipPDF(container, naglowekData, wartKol, zaOkres, imieNazwisko, prcNumber, frmNip, frmNazwa) {
+function generatePaySlipPDF(container, naglowekData, wartKol, zaOkres, imieNazwisko, prcNumber, frmNip, frmNazwa, pesel, etat, joName) {
     console.log(naglowekData);
     console.log(JSON.parse(wartKol));
-    console.log(zaOkres);
+    console.log("etat " + etat);
+    console.log("prcNumber " + prcNumber);
+    console.log("pesel " + pesel);
     let varKol = JSON.parse(wartKol);
     let nagDat = JSON.parse(naglowekData);
+    let nrPesel = JSON.parse(pesel);
+    console.log("1");
 
-    var kol1 = "", kol2 = "", kol3 = "", kol4 = "", kol5 = "", kol6 = "", kol7 = "", kol8 = "", kol8Plus = "",
-        kolB = "", kolN = "", kolP = "";
+    var kol1 = "", kol2 = "", kol3 = "", kol4 = "", kol5 = "", kol6 = "", kol7 = "", kol8 = "", kol8Plus = "", kolB = "", kolN = "", kolP = "", kolF = "", kolSZ = "";
+    var kol1T = [], kol2T = [], kol3T = [], kol4T = [], kol5T = [], kol6T = [], kolFT = [];
     var sumK1 = 0, sumK2 = 0, sumK3 = 0, sumK4 = 0, sumK5 = 0, sumK6 = 0, sumK7 = 0;
     var sumSkladekP = 0;
     var sumCalkoPracownik123, sumCalkoPracownik45;
@@ -22,58 +26,141 @@ function generatePaySlipPDF(container, naglowekData, wartKol, zaOkres, imieNazwi
         //     kol1 += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
         //     sumK1 += varKol[i].skWartosc;
         // }
-
-        if (varKol[i].kolumna == "KOL_1") {
-            kol1 += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
+        //console.log("1a");
+        if(varKol[i].kolumna === "KOL_1"){
+            let sizeTextSpace = sizeCell - (varKol[i].dskSkrot.length + varKol[i].skWartosc.toFixed(2).length);
+            let textSpace = "";
+            for (var j=0; j<sizeTextSpace;j++){
+                textSpace += " ";
+            }
+            kol1 += varKol[i].dskSkrot + textSpace + varKol[i].skWartosc.toFixed(2) + "\n";
+            kol1T.push([{text: varKol[i].dskSkrot , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  varKol[i].skWartosc.toFixed(2), fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
             sumK1 += varKol[i].skWartosc;
+            if (varKol[i].dskSkrot.includes("Płaca zasad")){
+                kol1T.push([{text: " " , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+            }
         }
-
-        if (varKol[i].kolumna == "KOL_2") {
-            kol2 += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
+        //console.log("1b");
+        if(varKol[i].kolumna === "KOL_2"){
+            let sizeTextSpace = sizeCell - (varKol[i].dskSkrot.length + varKol[i].skWartosc.toFixed(2).length);
+            let textSpace = "";
+            for (var j=0; j<sizeTextSpace;j++){
+                textSpace += " ";
+            }
+            kol2 += varKol[i].dskSkrot + textSpace + varKol[i].skWartosc.toFixed(2) + "\n";
+            kol2T.push([{text: varKol[i].dskSkrot , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  varKol[i].skWartosc.toFixed(2), fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
             sumK2 += varKol[i].skWartosc;
         }
+        //console.log("1c");
+        if(varKol[i].kolumna === "KOL_3"){
+            let textSpace = "";
 
-        if (varKol[i].kolumna == "KOL_3") {
-            kol3 += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
-            if (varKol[i].dskSkrot == "Emerytalna P") {
+            if (varKol[i].dskSkrot === "Zal.podatkow"){
+                kol3 += "\n";
+                kol3T.push([{text: " " , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+            }
+
+            if ( varKol[i].dskSkrot && varKol[i].skWartosc) {
+                let sizeTextSpace = sizeCell - (varKol[i].dskSkrot.length + varKol[i].skWartosc.toFixed(2).length);
+                for (var j=0; j<sizeTextSpace;j++){
+                    textSpace += " ";
+                }
+            }
+
+            kol3 += varKol[i].dskSkrot + textSpace + varKol[i].skWartosc.toFixed(2) + "\n";
+
+            var lBold = false;
+            if (varKol[i].dskSkrot === "SumaSkładekP"){
+                lBold = true;
+            }
+
+            kol3T.push([{text: varKol[i].dskSkrot , fontSize: 8, alignment: 'left', bold: lBold, border: [false, false, false, false]}, {text:  varKol[i].skWartosc.toFixed(2), fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+
+            if (varKol[i].dskSkrot === "Emerytalna P"){
                 sumSkladekP += varKol[i].skWartosc;
             }
-            if (varKol[i].dskSkrot == "Rentowa P") {
+            if (varKol[i].dskSkrot === "Rentowa P"){
                 sumSkladekP += varKol[i].skWartosc;
             }
-            if (varKol[i].dskSkrot == "Chorobowa P") {
+            if (varKol[i].dskSkrot === "Chorobowa P"){
                 sumSkladekP += varKol[i].skWartosc;
-                kol3 += "Suma skladek P " + sumSkladekP.toFixed(2) + "\n\n";
+                kol3 += "Suma skladek P  " + sumSkladekP.toFixed(2) + "\n\n";
+                //kol3T.push([{text: "Suma skladekP"  , fontSize: 8, alignment: 'left', bold: false, border: [false, false, false, false]}, {text:  varKol[i].skWartosc.toFixed(2), fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+                //kol3T.push([{text: " " , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
             }
-            sumK3 += varKol[i].skWartosc;
+            sumK3 += varKol[i].skWartosc.toFixed(2);
+
+
+            if (varKol[i].dskSkrot === "SumaSkładekP"){
+                kol3 += "\n";
+                kol3T.push([{text: " " , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+            }
+
+
         }
-
-        if (varKol[i].kolumna == "KOL_4") {
-            kol4 += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
+        //console.log("1d");
+        if(varKol[i].kolumna === "KOL_4"){
+            let sizeTextSpace = sizeCell - (varKol[i].dskSkrot.length + varKol[i].skWartosc.toFixed(2).length);
+            let textSpace = "";
+            //console.log( varKol[i].dskSkrot + " " + sizeTextSpace);
+            if (sizeTextSpace === 16) sizeTextSpace += 9;
+            for (var j=0; j<sizeTextSpace;j++){
+                textSpace += " ";
+            }
+            kol4 += varKol[i].dskSkrot + textSpace + varKol[i].skWartosc.toFixed(2) + "\n";
+            kol4T.push([{text: varKol[i].dskSkrot , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  varKol[i].skWartosc.toFixed(2), fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
             sumK4 += varKol[i].skWartosc;
         }
-
-        if (varKol[i].kolumna == "KOL_5") {
-            kol5 += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
+        //console.log("1e");
+        if(varKol[i].kolumna === "KOL_5"){
+            let sizeTextSpace = sizeCell - (varKol[i].dskSkrot.length + varKol[i].skWartosc.toFixed(2).length);
+            let textSpace = "";
+            for (var j=0; j<sizeTextSpace;j++){
+                textSpace += " ";
+            }
+            kol5 += varKol[i].dskSkrot + textSpace+ varKol[i].skWartosc.toFixed(2) + "\n";
+            kol5T.push([{text: varKol[i].dskSkrot , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  varKol[i].skWartosc.toFixed(2), fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
             sumK5 += varKol[i].skWartosc;
         }
 
-        if (varKol[i].kolumna == "KOL_6") {
-            kol6 += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
+
+        //console.log("1f");
+        if(varKol[i].kolumna === "KOL_6") {
+            let sizeTextSpace = sizeCell - (varKol[i].dskSkrot.length + varKol[i].skWartosc.toFixed(2).length);
+            let textSpace = "";
+            for (var j=0; j<sizeTextSpace;j++){
+                textSpace += " ";
+            }
+            kol6 += varKol[i].dskSkrot + textSpace + varKol[i].skWartosc.toFixed(2) + "\n";
+            kol6T.push([{text: varKol[i].dskSkrot , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  varKol[i].skWartosc.toFixed(2), fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
             sumK6 += varKol[i].skWartosc;
         }
 
-        if (varKol[i].kolumna == "KOL_B") { //brutto
-            kolB += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
+        if(varKol[i].kolumna === "KOL_F" && payslipsData.angaz === "F") { // tylko dla fizycznych
+            kolF += varKol[i].dskSkrot + "  " + varKol[i].skWartosc.toFixed(2) + "\n";
+            kol6T.push([{text: varKol[i].dskSkrot , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  varKol[i].skWartosc.toFixed(2), fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
         }
 
-        if (varKol[i].kolumna == "KOL_N") { // netto
-            console.log(varKol[i].dskSkrot);
-            kolN += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
+
+        //console.log("1g");
+        if(varKol[i].kolumna === "KOL_B") { //brutto
+            kolB += varKol[i].dskSkrot + " " + varKol[i].skWartosc.toFixed(2) + "\n";
         }
 
-        if (varKol[i].kolumna == "KOL_P") { // netto
-            kolP += varKol[i].dskSkrot + " " + varKol[i].skWartosc + "\n";
+        if(varKol[i].kolumna === "KOL_N") { // netto
+            kolN += varKol[i].dskSkrot + " " + varKol[i].skWartosc.toFixed(2) + "\n";
+        }
+
+        if(varKol[i].kolumna === "KOL_P") { // netto
+            if ( varKol[i].skWartosc !== 0 ){
+                kolP += varKol[i].dskSkrot + " " + varKol[i].skWartosc.toFixed(2) + "\n";
+            }
+        }
+
+        if(varKol[i].kolumna === "KOL_SZ") { // stawka zaszeregowania
+            if (kolSZ.length === 0){
+                kolSZ += varKol[i].dskSkrot + " " + varKol[i].skWartosc.toFixed(2) + "\n";
+            }
         }
         // if(varKol[i].kolumna == "KOL8"){
         //     var wartosc = varKol[i].opis;
@@ -89,8 +176,36 @@ function generatePaySlipPDF(container, naglowekData, wartKol, zaOkres, imieNazwi
         //
         // }
     }
+    //console.log("2a");
     sumCalkoPracownik123 = sumK1 + sumK2 + sumK3;
     sumCalkoPracownik45 = sumCalkoPracownik123 - (sumK4 + sumK5);
+
+    if (kol1T.length === 0 ){
+        kol1T.push([{text: "" , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+    }
+
+    if (kol2T.length === 0 ){
+        kol2T.push([{text: "" , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+    }
+
+    if (kol3T.length === 0 ){
+        kol3T.push([{text: "" , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+    }
+
+    if (kol4T.length === 0 ){
+        kol4T.push([{text: "" , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+    }
+
+    if (kol5T.length === 0 ){
+        kol5T.push([{text: "" , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+    }
+
+    if (kol6T.length === 0 ){
+        kol6T.push([{text: "" , fontSize: 8, alignment: 'left', border: [false, false, false, false]}, {text:  "", fontSize: 8, alignment: 'right', border: [false, false, false, false]}]);
+    }
+
+    //console.log("2b");
+
 
     let tableBody = {
         unbreakable: true,
@@ -102,8 +217,8 @@ function generatePaySlipPDF(container, naglowekData, wartKol, zaOkres, imieNazwi
             body: [
                 [
                     {
-                        //", Jedno. Organiz.: " + lSalary.skKodAndDesc +
-                        text: frmNazwa + ", NIP: " + frmNip +
+
+                        text: frmNazwa + ", NIP: " + frmNip +  ", Jedno. Organiz.: " + joName +
                             "\nLista płac numer: " + nagDat.LSTnumber + " za m-c " + zaOkres + ", data wypłaty " + nagDat.dataWypl,
                         colSpan: 7,
                         border: [false, true, false, false],
@@ -122,19 +237,62 @@ function generatePaySlipPDF(container, naglowekData, wartKol, zaOkres, imieNazwi
                     {text: "Inne składki", bold: true, fontSize: 10},
                     {text: "Składniki opisowe", bold: true, fontSize: 10}
                 ],
-                //zawartość kolumn
+                //zawartość kolumn + kol8
                 [
-                    {
-                        text: [imieNazwisko + "\nNumer " + prcNumber + "\n" + kol8],
-                        fontSize: 8,
-                        bold: true
-                    },
-                    {text: kol1, fontSize: 8}, //
-                    {text: kol2, fontSize: 8},
-                    {text: kol3, fontSize: 8},
-                    {text: kol4, fontSize: 8},
-                    {text: kol5, fontSize: 8},
-                    {text: kol6, fontSize: 8}, //
+                    {text: [{text: imieNazwisko, bold: true}
+                            ,{text:  "\nNumer: "+ prcNumber}
+                            ,{text:  "\nPesel "+ pesel}
+                            ,{text:  etat !== 'undefined' ? "\nEtat: " + etat : ""}
+                            ,{text:  "\n"+ kolSZ}
+                        ] , fontSize: 9},
+
+                    {table: { body: kol1T }, layout: {
+                            paddingLeft: function(i, node) { return 0; },
+                            paddingRight: function(i, node) { return 10; },
+                            paddingTop: function(i, node) { return 0; },
+                            paddingBottom: function(i, node) { return 0; },
+                        }},
+                    {table: { body: kol2T }, layout: {
+                            paddingLeft: function(i, node) { return 0; },
+                            paddingRight: function(i, node) { return 10; },
+                            paddingTop: function(i, node) { return 0; },
+                            paddingBottom: function(i, node) { return 0; },
+                        }},
+                    {table: { body: kol3T }, layout: {
+                            paddingLeft: function(i, node) { return 0; },
+                            paddingRight: function(i, node) { return 10; },
+                            paddingTop: function(i, node) { return 0; },
+                            paddingBottom: function(i, node) { return 0; },
+                        }},
+                    {table: { body: kol4T }, layout: {
+                            paddingLeft: function(i, node) { return 0; },
+                            paddingRight: function(i, node) { return 10; },
+                            paddingTop: function(i, node) { return 0; },
+                            paddingBottom: function(i, node) { return 0; },
+                        }},
+                    {table: { body: kol5T }, layout: {
+                            paddingLeft: function(i, node) { return 0; },
+                            paddingRight: function(i, node) { return 10; },
+                            paddingTop: function(i, node) { return 0; },
+                            paddingBottom: function(i, node) { return 0; },
+                        }},
+                    {table: { body: kol6T }, layout: {
+                            paddingLeft: function(i, node) { return 0; },
+                            paddingRight: function(i, node) { return 10; },
+                            paddingTop: function(i, node) { return 0; },
+                            paddingBottom: function(i, node) { return 0; },
+                        }},
+                    // {
+                    //     text: [imieNazwisko + "\nNumer " + prcNumber + "\n" + kol8],
+                    //     fontSize: 8,
+                    //     bold: true
+                    // },
+                    // {text: kol1, fontSize: 8}, //
+                    // {text: kol2, fontSize: 8},
+                    // {text: kol3, fontSize: 8},
+                    // {text: kol4, fontSize: 8},
+                    // {text: kol5, fontSize: 8},
+                    // {text: kol6, fontSize: 8}, //
                 ],
                 //ostatni wiersz
                 [
@@ -159,6 +317,8 @@ function generatePaySlipPDF(container, naglowekData, wartKol, zaOkres, imieNazwi
             ],
         }
     };
+
+    //console.log("3");
 
     let doc = (body) => { // w przyszlosci dodac bottom
         const baseDoc = {
@@ -185,205 +345,16 @@ function generatePaySlipPDF(container, naglowekData, wartKol, zaOkres, imieNazwi
             ],
 
         };
-
+        //console.log("4");
         const docDefinition = JSON.parse(JSON.stringify(baseDoc));
         docDefinition.footer = baseDoc.footer;
         docDefinition.content.push(body);
 
         return docDefinition;
     };
-    // var docDefinition = {
-    //     content: [
-    //         {
-    //             alignment: 'center',
-    //             text: 'PPRA',
-    //             style: 'header',
-    //             fontSize: 23,
-    //             bold: true,
-    //             margin: [0, 10],
-    //         },
-    //         {
-    //             margin: [0, 0, 0, 10],
-    //             layout: {
-    //                 fillColor: function (rowIndex, node, columnIndex) {
-    //                     return (rowIndex % 2 === 0) ? '#ebebeb' : '#f5f5f5';
-    //                 }
-    //             },
-    //             table: {
-    //                 widths: ['100%'],
-    //                 heights: [20,10],
-    //                 body: [
-    //                     [
-    //                         {
-    //                             text: 'SETOR: ADMINISTRATIVO',
-    //                             fontSize: 9,
-    //                             bold: true,
-    //                         }
-    //                     ],
-    //                     [
-    //                         {
-    //                             text: 'FUNÇÃO: DIRETOR DE ENSINO',
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         }
-    //                     ],
-    //                 ],
-    //             }
-    //         },
-    //         {
-    //             style: 'tableExample',
-    //             layout: {
-    //                 fillColor: function (rowIndex, node, columnIndex) {
-    //                     return (rowIndex === 0) ? '#c2dec2' : null;
-    //                 }
-    //             },
-    //             table: {
-    //                 widths: ['30%', '10%', '25%', '35%'],
-    //                 heights: [10,10,10,10,30,10,25],
-    //                 headerRows: 1,
-    //                 body: [
-    //                     [
-    //                         {
-    //                             text: 'AGENTE: Não Identificados',
-    //                             colSpan: 3,
-    //                             bold: true,
-    //                             fontSize: 9
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                             text: 'GRUPO: Grupo 1 - Riscos Físicos',
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         }
-    //                     ],
-    //                     [
-    //                         {
-    //                             text: 'Limite de Tolerância:',
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                             text: 'Meio de Propagação:',
-    //                             colSpan: 3,
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                         }
-    //                     ],
-    //                     [
-    //                         {
-    //                             text: [
-    //                                 'Frequência: ',
-    //                                 {
-    //                                     text: 'Habitual',
-    //                                     bold: false
-    //                                 }
-    //                             ],
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                             text: [
-    //                                 'Classificação do Efeito: ',
-    //                                 {
-    //                                     text: 'Leve',
-    //                                     bold: false
-    //                                 }
-    //                             ],
-    //                             colSpan: 3,
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                         }
-    //                     ],
-    //                     [
-    //                         {
-    //                             text: 'Tempo de Exposição:',
-    //                             colSpan: 2,
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                             text: 'Medição:',
-    //                             colSpan: 2,
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                         }
-    //                     ],
-    //                     [
-    //                         {
-    //                             text: 'Fonte Geradora:',
-    //                             border: [true, true, false, false],
-    //                             colSpan: 2,
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                             text: 'Téc. Utilizada:',
-    //                             border: [false, true, true, false],
-    //                             colSpan: 2,
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                         }
-    //                     ],
-    //                     [
-    //                         {
-    //                             text: 'Conclusão:',
-    //                             border: [true, false, true, true],
-    //                             colSpan: 4,
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                         }
-    //                     ],
-    //                     [
-    //                         {
-    //                             text: 'EPIs/EPCs:',
-    //                             border: [true, true, false, true],
-    //                             colSpan: 3,
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                         },
-    //                         {
-    //                             text: 'CAs:',
-    //                             border: [false, true, true, true],
-    //                             fontSize: 9,
-    //                             bold: true
-    //                         }
-    //                     ],
-    //                 ]
-    //             }
-    //         }
-    //     ]
-    // }
-    //var docDefinition = { content:['hello prcId: ' + par1 + " frmId:" + par2 ]};
+
     const docDefinition = doc(tableBody);
+    //console.log(docDefinition);
     pdfMake.createPdf(docDefinition).download('file.pdf', function () {
         alert('your pdf is done');
     });

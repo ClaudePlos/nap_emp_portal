@@ -30,13 +30,13 @@ public class Zatrudnienie {
     private Date zatDataDo;
 
     @Column(name = "zat_typ_umowy")
-    private Long zatTypUmowy;
+    private BigDecimal zatTypUmowy;
 
     @Column(name = "zat_sk_id")
-    private Long zatSkId;
+    private BigDecimal zatSkId;
 
     @Column(name = "zat_ob_id")
-    private Long zatObId;
+    private BigDecimal zatObId;
 
     @Column(name = "zat_aneks")
     private String zatAneks;
@@ -45,7 +45,7 @@ public class Zatrudnienie {
     private BigDecimal zatPrcId;
 
     @Column(name = "zat_zat_id")
-    private Long zatZatId;
+    private BigDecimal zatZatId;
 
     @Column(name = "zat_f_rodzaj")
     private String zatFRodzaj;
@@ -72,7 +72,7 @@ public class Zatrudnienie {
     private String zatGprcKod;
 
     @Column(name="zat_pp_id")
-    private Long ppId;
+    private BigDecimal ppId;
 
     @Column(name="zat_def_0")
     private String def0;
@@ -102,16 +102,22 @@ public class Zatrudnienie {
     private String zatUbezpObEmeryt;
 
     @Column(name="zat_stn_id")
-    private Long zatStnId;
+    private BigDecimal zatStnId;
 
     @Column(name="zat_frm_id")
     private BigDecimal frmId;
+
+    @Column(name="zat_wymiar")
+    private BigDecimal zatWymiar;
 
     @Transient
     private WymiarEtatu wymiarEtatu;
 
     @Transient
     private String frmNazwa;
+
+    @Transient
+    private String joName;
 
     public Zatrudnienie() {
     }
@@ -156,27 +162,27 @@ public class Zatrudnienie {
         this.zatDataDo = zatDataDo;
     }
 
-    public Long getZatTypUmowy() {
+    public BigDecimal getZatTypUmowy() {
         return zatTypUmowy;
     }
 
-    public void setZatTypUmowy(Long zatTypUmowy) {
+    public void setZatTypUmowy(BigDecimal zatTypUmowy) {
         this.zatTypUmowy = zatTypUmowy;
     }
 
-    public Long getZatSkId() {
+    public BigDecimal getZatSkId() {
         return zatSkId;
     }
 
-    public void setZatSkId(Long zatSkId) {
+    public void setZatSkId(BigDecimal zatSkId) {
         this.zatSkId = zatSkId;
     }
 
-    public Long getZatObId() {
+    public BigDecimal getZatObId() {
         return zatObId;
     }
 
-    public void setZatObId(Long zatObId) {
+    public void setZatObId(BigDecimal zatObId) {
         this.zatObId = zatObId;
     }
 
@@ -196,11 +202,11 @@ public class Zatrudnienie {
         this.zatPrcId = zatPrcId;
     }
 
-    public Long getZatZatId() {
+    public BigDecimal getZatZatId() {
         return zatZatId;
     }
 
-    public void setZatZatId(Long zatZatId) {
+    public void setZatZatId(BigDecimal zatZatId) {
         this.zatZatId = zatZatId;
     }
 
@@ -268,11 +274,11 @@ public class Zatrudnienie {
         this.zatGprcKod = zatGprcKod;
     }
 
-    public Long getPpId() {
+    public BigDecimal getPpId() {
         return ppId;
     }
 
-    public void setPpId(Long ppId) {
+    public void setPpId(BigDecimal ppId) {
         this.ppId = ppId;
     }
 
@@ -372,11 +378,11 @@ public class Zatrudnienie {
         this.zatUbezpObEmeryt = zatUbezpObEmeryt;
     }
 
-    public Long getZatStnId() {
+    public BigDecimal getZatStnId() {
         return zatStnId;
     }
 
-    public void setZatStnId(Long zatStnId) {
+    public void setZatStnId(BigDecimal zatStnId) {
         this.zatStnId = zatStnId;
     }
 
@@ -386,6 +392,14 @@ public class Zatrudnienie {
 
     public void setFrmId(BigDecimal frmId) {
         this.frmId = frmId;
+    }
+
+    public BigDecimal getZatWymiar() {
+        return zatWymiar;
+    }
+
+    public void setZatWymiar(BigDecimal zatWymiar) {
+        this.zatWymiar = zatWymiar;
     }
 
     public WymiarEtatu getWymiarEtatu() {
@@ -402,5 +416,13 @@ public class Zatrudnienie {
 
     public void setFrmNazwa(String frmNazwa) {
         this.frmNazwa = frmNazwa;
+    }
+
+    public String getJoName() {
+        return joName;
+    }
+
+    public void setJoName(String joName) {
+        this.joName = joName;
     }
 }
