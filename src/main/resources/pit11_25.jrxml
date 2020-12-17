@@ -1068,7 +1068,7 @@ $F{NIP_F}.substring(9,10)+" "]]></textFieldExpression>
                 <textField pattern="" isBlankWhenNull="true">
                     <reportElement x="53" y="275" width="449" height="14" uuid="0625026d-ccb3-4840-9549-9b22d1f6192b"/>
                     <textElement textAlignment="Left" verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="9" isBold="false"/>
+                        <font fontName="SansSerif" size="9" isBold="false" pdfEncoding="Cp1250"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{P_90}]]></textFieldExpression>
                 </textField>

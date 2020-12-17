@@ -12,7 +12,7 @@ public class User {
     @Column(name = "PRC_ID")
     private BigDecimal prcId;
 
-    @Column(name = "PRC_NUMER", insertable=false, updatable=false)
+    @Column(name = "PRC_NUMER1", insertable=false, updatable=false)
     private String username;
 
     @Column(name = "PRC_NUMER")
