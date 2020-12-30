@@ -24,9 +24,12 @@ import org.springframework.util.ResourceUtils;
 import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracjeDTO;
 import pl.kskowronski.data.entity.egeria.ek.User;
+import pl.kskowronski.data.entity.log.LogEvent;
+import pl.kskowronski.data.entity.log.LogPit11;
 import pl.kskowronski.data.reaports.Pit11Service;
 import pl.kskowronski.data.service.egeria.eDek.EdktDeklaracjeService;
 import pl.kskowronski.data.service.egeria.ek.UserService;
+import pl.kskowronski.data.service.log.LogPit11Service;
 import pl.kskowronski.views.main.MainView;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,10 +38,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Route(value = "Pit11", layout = MainView.class)
@@ -49,6 +49,7 @@ public class Pit11View extends VerticalLayout {
 
     private UserService userService;
     private EdktDeklaracjeService edktDeklaracjeService;
+    private LogPit11Service logPit11Service;
 
 
     @Autowired
@@ -64,10 +65,13 @@ public class Pit11View extends VerticalLayout {
 
     private Optional<User> worker;
 
-    public Pit11View(@Autowired UserService userService, @Autowired EdktDeklaracjeService edktDeklaracjeService) {
+    public Pit11View(@Autowired UserService userService
+            , @Autowired LogPit11Service logPit11Service
+            , @Autowired EdktDeklaracjeService edktDeklaracjeService) {
         setHeight("85%");
         this.userService = userService;
         this.edktDeklaracjeService = edktDeklaracjeService;
+        this.logPit11Service = logPit11Service;
 
         yearField.setLabel("Rok");
         yearField.getElement().setProperty("title", "Test");
@@ -152,6 +156,8 @@ public class Pit11View extends VerticalLayout {
         Anchor a = new Anchor(res, "kliknij tu by pobrać pit11");
         a.setTarget( "_blank" ) ;
 
+        saveLog();
+
         dialog.add(a, new Button("Zamknij", e -> dialog.close()));
         add(dialog);
         dialog.open();
@@ -187,6 +193,15 @@ public class Pit11View extends VerticalLayout {
     private void refreshGrid() {
         grid.select(null);
         grid.getDataProvider().refreshAll();
+    }
+
+    private void saveLog(){
+        LogPit11 logPit11 = new LogPit11();
+        logPit11.setPrcId(worker.get().getPrcId());
+        logPit11.setEvent(LogEvent.DOWNLOAD_THE_DECLARATION_PIT11.toString());
+        logPit11.setYear(BigDecimal.valueOf( Long.parseLong(yearField.getValue().toString())) );
+        logPit11.setAuditDc(new Date());
+        logPit11Service.save(logPit11);
     }
 }
 
