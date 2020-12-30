@@ -156,11 +156,11 @@ public class Pit11View extends VerticalLayout {
         Anchor a = new Anchor(res, "kliknij tu by pobrać pit11");
         a.setTarget( "_blank" ) ;
 
-        saveLog();
-
         dialog.add(a, new Button("Zamknij", e -> dialog.close()));
         add(dialog);
         dialog.open();
+
+        saveLog();
     }
 
     private void onUserChangedYear(String year){
@@ -199,7 +199,7 @@ public class Pit11View extends VerticalLayout {
         LogPit11 logPit11 = new LogPit11();
         logPit11.setPrcId(worker.get().getPrcId());
         logPit11.setEvent(LogEvent.DOWNLOAD_THE_DECLARATION_PIT11.toString());
-        logPit11.setYear(BigDecimal.valueOf( Long.parseLong(yearField.getValue().toString())) );
+        logPit11.setYear(BigDecimal.valueOf( Long.parseLong(yearField.getValue().toString().substring(0,4))) );
         logPit11.setAuditDc(new Date());
         logPit11Service.save(logPit11);
     }

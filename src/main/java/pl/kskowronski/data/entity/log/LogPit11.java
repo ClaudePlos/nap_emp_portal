@@ -10,6 +10,7 @@ import java.util.Date;
 public class LogPit11 {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private BigDecimal id;
 
