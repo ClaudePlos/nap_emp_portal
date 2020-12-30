@@ -48,7 +48,7 @@ public class AbsenceService extends CrudService<Absencja, BigDecimal> {
     MapperDate mapperDate = new MapperDate();
 
     public Optional<List<AbsenceDTO>> findAllByAbPrcIdForYear(BigDecimal prcId, String year) throws Exception {
-        consolidationService.setConsolidateCompany();
+        //consolidationService.setConsolidateCompany();
         Optional<List<Absencja>> listAbsence = repo.findAllByAbPrcIdForYear(prcId
                 , mapperDate.dtYYYYMMDD.parse(year+"-01-01")
                 , mapperDate.dtYYYYMMDD.parse(year+"-12-31"));
