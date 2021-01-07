@@ -35,7 +35,7 @@ public class AbsenceLimitService {
     public Optional<List<AbsenceLimitDTO>> findAllAbsenceLimitForPrcIdAndYear(BigDecimal prcId, String year, String codeHoliday) throws Exception {
         Optional<List<AbsenceLimitDTO>> listAbLimit = Optional.of(new ArrayList<>());
 
-        //consolidationService.setConsolidateCompany();
+        consolidationService.setConsolidateCompany();
 
         String sql = "select la_prc_id, la_rok, ld_od, ld_do, ld_pozostalo, la_dg_kod, la_frm_id" +
                 " from ek_limity_absencji, ek_limity_dane" +

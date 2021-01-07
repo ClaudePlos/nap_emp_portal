@@ -59,13 +59,19 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH)); //last day month
         Date dataDo = cal.getTime();
 
-        Optional<List<Zatrudnienie>> contracts = Optional.ofNullable(em.createQuery("select z from Zatrudnienie z where z.zatPrcId = :prcId "
-                + "and z.zatDataZmiany <= :dataDo and COALESCE(z.zatDataDo, :dataOd) >= :dataOd "
-                + "and z.zatTypUmowy = 0")
-                .setParameter("prcId", prcId)
-                .setParameter("dataOd", dataOd, TemporalType.DATE)
-                .setParameter("dataDo", dataDo, TemporalType.DATE)
-                .getResultList());
+        Optional<List<Zatrudnienie>> contracts = Optional.of(new ArrayList<>());
+        try {
+            contracts = Optional.ofNullable(em.createQuery("select z from Zatrudnienie z where z.zatPrcId = :prcId "
+                    + "and z.zatDataZmiany <= :dataDo and COALESCE(z.zatDataDo, :dataOd) >= :dataOd "
+                    + "and z.zatTypUmowy = 0")
+                    .setParameter("prcId", prcId)
+                    .setParameter("dataOd", dataOd, TemporalType.DATE)
+                    .setParameter("dataDo", dataDo, TemporalType.DATE)
+                    .getResultList());
+        } catch ( Exception ex ){
+            System.out.println(ex.getMessage());
+        }
+
         if ( contracts.isPresent() ){
             contracts.get().stream().forEach( z -> {
                 z.setFrmNazwa(eatFirmaService.findById(z.getFrmId()).get().getFrmNazwa());
