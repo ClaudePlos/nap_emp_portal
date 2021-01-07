@@ -27,12 +27,12 @@ public class Pit11Service {
 
         //load file and compile it
         ClassLoader cl = this.getClass().getClassLoader();
-        URL url =  cl.getResource("pit11_25.jrxml");
+        URL url =  cl.getResource("pit11_26.jrxml");
 
-        String absolutePath = url.getPath() + "\\";
+        String absolutePath = url.getPath(); //+ "\\"
 
         if (!absolutePath.toUpperCase().substring(1,3).equals("C:")){ //todo better check system operation
-            absolutePath = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pattern/pit11_25.jrxml";
+            absolutePath = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pattern/pit11_26.jrxml";
             path = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pdf/";
         }
         //System.out.println(absolutePath);
