@@ -42,7 +42,7 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
     };
 
     public Optional<List<EdktDeklaracjeDTO>> findAllByDklPrcId(BigDecimal prcId, String year) throws ParseException {
-        //repo.setConsolidate();
+        repo.setConsolidate();
         Optional<List<EdktDeklaracje>> listDek = repo.findAllByDklPrcIdForYear(prcId, mapperDate.dtYYYYMMDD.parse(year+"-01-01")
                 , mapperDate.dtYYYYMMDD.parse(year+"-12-31"));
         Optional<List<EdktDeklaracjeDTO>> listDekDTO = Optional.of(new ArrayList<>());
