@@ -422,7 +422,7 @@ $F{NIP}.substring(9,10)+" "]]></textFieldExpression>
             <textField textAdjust="StretchHeight" isBlankWhenNull="true">
                 <reportElement x="51" y="399" width="475" height="18" uuid="9cd209b3-d2d8-4cb8-b170-834034e9970c"/>
                 <textElement verticalAlignment="Middle">
-                    <font fontName="SansSerif" size="8"/>
+                    <font fontName="SansSerif" size="8" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{PelnaNazwa}]]></textFieldExpression>
             </textField>
@@ -555,7 +555,7 @@ $F{DataUrodzenia}.substring( 0, 4)]]></textFieldExpression>
                 <textField isBlankWhenNull="true">
                     <reportElement x="54" y="628" width="330" height="14" uuid="dad3c84b-2e2b-4e5b-889e-d7d68f861814"/>
                     <textElement verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="9"/>
+                        <font fontName="SansSerif" size="9" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{Miejscowosc}]]></textFieldExpression>
                 </textField>
@@ -641,7 +641,7 @@ $F{NIP_F}.substring(9,10)+" "]]></textFieldExpression>
             <textField textAdjust="StretchHeight" isBlankWhenNull="true">
                 <reportElement x="51" y="425" width="475" height="18" uuid="cbcf601e-f5c5-4143-9230-d1e85719fea7"/>
                 <textElement verticalAlignment="Middle">
-                    <font fontName="SansSerif" size="8"/>
+                    <font fontName="SansSerif" size="8" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{NazwaFizyczna}]]></textFieldExpression>
             </textField>
@@ -1082,35 +1082,35 @@ $F{NIP_F}.substring(9,10)+" "]]></textFieldExpression>
                 <textField pattern="" isBlankWhenNull="true">
                     <reportElement x="54" y="361" width="448" height="14" uuid="2f2336fd-5f4d-4a37-8ca8-d5a1bc20379c"/>
                     <textElement textAlignment="Left" verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="9" isBold="false"/>
+                        <font fontName="SansSerif" size="9" isBold="false" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{P_91}]]></textFieldExpression>
                 </textField>
                 <textField pattern="" isBlankWhenNull="true">
                     <reportElement x="399" y="164" width="125" height="15" uuid="af21a44b-a4eb-4d19-9087-6f6841164641"/>
                     <textElement textAlignment="Right" verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="10" isBold="true"/>
+                        <font fontName="SansSerif" size="10" isBold="true" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{P_86}.replace( ".", "," )]]></textFieldExpression>
                 </textField>
                 <textField pattern="" isBlankWhenNull="true">
                     <reportElement x="399" y="141" width="125" height="15" uuid="e750df80-7b4a-470c-a81f-c98b27f24d87"/>
                     <textElement textAlignment="Right" verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="10" isBold="true"/>
+                        <font fontName="SansSerif" size="10" isBold="true" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{P_85}.replace( ".", "," )]]></textFieldExpression>
                 </textField>
                 <textField pattern="" isBlankWhenNull="true">
                     <reportElement x="399" y="187" width="125" height="15" uuid="d05d9de7-e456-402b-bc64-b3cd9cbfbe27"/>
                     <textElement textAlignment="Right" verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="10" isBold="true"/>
+                        <font fontName="SansSerif" size="10" isBold="true" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{P_87}.replace( ".", "," )]]></textFieldExpression>
                 </textField>
                 <textField pattern="" isBlankWhenNull="true">
                     <reportElement x="399" y="210" width="125" height="15" uuid="ce23b866-ec89-4bfd-a0a3-d60dba21fe37"/>
                     <textElement textAlignment="Right" verticalAlignment="Bottom">
-                        <font fontName="SansSerif" size="10" isBold="true"/>
+                        <font fontName="SansSerif" size="10" isBold="true" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
                     </textElement>
                     <textFieldExpression><![CDATA[$F{P_88}.replace( ".", "," )]]></textFieldExpression>
                 </textField>
