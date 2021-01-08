@@ -52,7 +52,7 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
     private MapperDate mapperDate = new MapperDate();
 
     public Optional<List<Zatrudnienie>> getActualContractForWorker(BigDecimal prcId, String period) throws ParseException {
-        consolidationService.setConsolidateCompany();
+        //consolidationService.setConsolidateCompany();
         Date dataOd = dfYYYYMMDD.parse(period + "-01");
         Calendar cal = Calendar.getInstance();
         cal.setTime(dataOd);
@@ -83,7 +83,7 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
     }
 
     public List<User> getPracownikZatrudNaSkMc(BigDecimal prcIdForm, String okres, BigDecimal frmId, Long typeContract ){
-        consolidationService.setConsolidateCompanyOnCompany(frmId);
+        //consolidationService.setConsolidateCompanyOnCompany(frmId);
         List<User> listaAktPracNaSk = new ArrayList<User>();
         // todo KS usunąć stanowiska kosztow administracji
         String sql = "select distinct prc_id, prc_numer, prc_nazwisko, prc_imie, prc_pesel, zat_wymiar, zat_status\n" +

@@ -33,11 +33,11 @@ public class Pit11Service {
         String nameOS = System.getProperty("os.name");
         String absolutePath = url.getPath(); //+ "\\"
 
-        if (!nameOS.toUpperCase().contains("WINDOWS")){ //todo better check system operation
+        if (!nameOS.toUpperCase().contains("WINDOWS")){
             absolutePath = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pattern/pit11_26.jrxml";
             path = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pdf/";
         }
-        System.out.println(absolutePath);
+        //System.out.println(absolutePath);
         //File file = ResourceUtils.getFile("classpath:pit11_25.jrxml"); // only for windows
         File filePattern = ResourceUtils.getFile(absolutePath);
         JasperReport jasperReport = JasperCompileManager.compileReport(filePattern.getAbsolutePath());

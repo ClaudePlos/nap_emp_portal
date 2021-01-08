@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "LOG_PIT11")
+@Table(name = "NPP_LOG_PIT11")
 public class LogPit11 {
 
     @Id
@@ -26,6 +26,9 @@ public class LogPit11 {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "AUDIT_DC")
     private Date auditDc;
+
+    @Column(name = "DESCRIPTION")
+    private String description;
 
     public LogPit11() {
     }
@@ -68,5 +71,13 @@ public class LogPit11 {
 
     public void setAuditDc(Date auditDc) {
         this.auditDc = auditDc;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
