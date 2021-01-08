@@ -29,13 +29,15 @@ public class Pit11Service {
         ClassLoader cl = this.getClass().getClassLoader();
         URL url =  cl.getResource("pit11_26.jrxml");
 
+
+        String nameOS = System.getProperty("os.name");
         String absolutePath = url.getPath(); //+ "\\"
 
-        if (!absolutePath.toUpperCase().substring(1,3).equals("C:")){ //todo better check system operation
+        if (!nameOS.toUpperCase().contains("WINDOWS")){ //todo better check system operation
             absolutePath = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pattern/pit11_26.jrxml";
             path = "/home/szeryf/kskowronski_projects/nap_emp_portal/pit11_pdf/";
         }
-        //System.out.println(absolutePath);
+        System.out.println(absolutePath);
         //File file = ResourceUtils.getFile("classpath:pit11_25.jrxml"); // only for windows
         File filePattern = ResourceUtils.getFile(absolutePath);
         JasperReport jasperReport = JasperCompileManager.compileReport(filePattern.getAbsolutePath());
