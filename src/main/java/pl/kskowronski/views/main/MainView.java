@@ -27,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.data.service.egeria.global.NapUserService;
+import pl.kskowronski.views.components.ConfirmAcceptDialog;
 import pl.kskowronski.views.mainpage.MainPageView;
 import pl.kskowronski.views.absences.AllAboutAbsencesView;
 import pl.kskowronski.views.about.AboutView;
@@ -56,6 +57,10 @@ public class MainView extends AppLayout {
         Optional<User> worker = userService.findByUsername(userDetails.getUsername());
         VaadinSession session = VaadinSession.getCurrent();
         session.setAttribute(User.class, worker.get());
+
+        //open confirm Dialog
+        ConfirmAcceptDialog confirmAcceptDialog = new ConfirmAcceptDialog();
+        confirmAcceptDialog.openConfirmDialog();
     }
 
     private Component createHeaderContent() {
