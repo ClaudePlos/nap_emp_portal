@@ -25,8 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.kskowronski.data.entity.egeria.ek.User;
+import pl.kskowronski.data.entity.log.LogConfirmAcceptation;
 import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.data.service.egeria.global.NapUserService;
+import pl.kskowronski.data.service.log.LogConfirmAcceptationService;
 import pl.kskowronski.views.components.ConfirmAcceptDialog;
 import pl.kskowronski.views.mainpage.MainPageView;
 import pl.kskowronski.views.absences.AllAboutAbsencesView;
@@ -45,7 +47,10 @@ public class MainView extends AppLayout {
     private final Tabs menu;
     private H1 viewTitle;
 
-    public MainView(@Autowired UserService userService, @Autowired NapUserService napUserService) {
+
+
+    @Autowired
+    public MainView(UserService userService, NapUserService napUserService, LogConfirmAcceptationService logConfirmAcceptationService) {
         //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //System.out.println(userDetails.getUsername());
         setPrimarySection(Section.DRAWER);
@@ -58,9 +63,12 @@ public class MainView extends AppLayout {
         VaadinSession session = VaadinSession.getCurrent();
         session.setAttribute(User.class, worker.get());
 
-        //open confirm Dialog
-        ConfirmAcceptDialog confirmAcceptDialog = new ConfirmAcceptDialog();
-        confirmAcceptDialog.openConfirmDialog();
+        //check user accept to get data, if not then open confirm Dialog
+        Optional<LogConfirmAcceptation> logConfirmAcceptation = logConfirmAcceptationService.findByPrcId(worker.get().getPrcId());
+        if (!logConfirmAcceptation.isPresent()) {
+            ConfirmAcceptDialog confirmAcceptDialog = new ConfirmAcceptDialog(logConfirmAcceptationService);
+            confirmAcceptDialog.openConfirmDialog(worker.get().getPrcId());
+        }
     }
 
     private Component createHeaderContent() {
