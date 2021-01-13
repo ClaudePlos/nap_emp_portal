@@ -611,7 +611,7 @@ public class PayslipisService {
                 }
 
                 // get il. day pracownika
-                Long ilDniPrzepracowanych =  skladnikService.getDniPrzeprac(p.getPrcId(), periodYYYYMM, frmId);
+                Long ilDniPrzepracowanych =  0L;//skladnikService.getDniPrzeprac(p.getPrcId(), periodYYYYMM, frmId);
                 cellSkladLiczbDniPrzeprac.addElement(new Phrase(" " +ilDniPrzepracowanych.toString(),helvFont10));
 
 

@@ -26,14 +26,15 @@ public class ConfirmAcceptDialog extends Dialog {
     }
 
     public void openConfirmDialog(BigDecimal prcId){
-        Html text = new Html("<div> Tekst </div>");
+        Html text = new Html("<div> CZY WYRAŻASZ ZGODĘ NA UDOSTĘPNIENIE DEKLARACJI PIT 11 DROGĄ<br>\n" +
+                "ELEKTRONICZNĄ - ZAZNACZ ODPOWIEDNI KWADRAT TAK/NIE </div>");
         HorizontalLayout h1 = new HorizontalLayout();
-        Button butAccept = new Button("Akceptuję");
+        Button butAccept = new Button("TAK");
         butAccept.addClickListener(e -> {
             confirmedAcceptation(prcId);
             close();
         });
-        Button butReject = new Button("Odrzucam");
+        Button butReject = new Button("NIE");
         butReject.addClickListener(e ->{
             butReject.getUI().ifPresent(ui ->
                     ui.navigate("logout"));

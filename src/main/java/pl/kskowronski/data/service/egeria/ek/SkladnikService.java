@@ -20,14 +20,14 @@ public class SkladnikService  {
     @PersistenceContext
     private EntityManager em;
 
-    @Autowired
-    ConsolidationService consolidationService;
+    //@Autowired
+    //ConsolidationService consolidationService;
 
     public List<EkSkladnikDTO> getValueForListComponents (BigDecimal prcId, String periodYYYYMM, String dskIdList, BigDecimal frmId, Long typeContract){
         List<EkSkladnikDTO> listComponents = new ArrayList<>();
         List<Object[]> listComObj = new ArrayList<>();
         String contract = "LPLAC";
-        consolidationService.setConsolidateCompanyOnCompany( frmId );
+        //consolidationService.setConsolidateCompanyOnCompany( frmId );
 
         if ( typeContract == 2 ){
             contract = "ZLEC";
@@ -41,7 +41,7 @@ public class SkladnikService  {
                     "   and sk_prc_id = " + prcId + "\n" +
                     "   and lst_drl_kod = '" + contract + "'\n" +
                     "   and sk_status = 1 \n" +
-                    "   and to_char(lst_data_obliczen,'YYYY-MM') = '" + periodYYYYMM + "'  \n" +
+                    "   and to_char(lst_data_obliczen,'YYYY-MM') = '" + periodYYYYMM + "' and sk_frm_id = " + frmId + "  \n" +
                     "   and sk_dsk_id in (" + dskIdList.substring(0, dskIdList.length()-1) + ") group by dsk_nazwa order by dsk_nazwa";
 
             listComObj = em.createNativeQuery(sql).getResultList();
@@ -64,7 +64,7 @@ public class SkladnikService  {
 
     public Double getValueFromPayroll( BigDecimal prcId, String periodYYYYMM, BigDecimal dskId, BigDecimal frmId, Long typeContract ){
         String contract = "LPLAC";
-        consolidationService.setConsolidateCompanyOnCompany( frmId );
+        //consolidationService.setConsolidateCompanyOnCompany( frmId );
 
         if ( typeContract == 2 ){
             contract = "ZLEC";
@@ -78,7 +78,8 @@ public class SkladnikService  {
                     "   and lst_drl_kod = '" + contract + "'\n" +
                     "   and sk_status = 1 \n" +
                     "   and to_char(lst_data_obliczen,'YYYY-MM') = '" + periodYYYYMM + "'  \n" +
-                    "   and sk_dsk_id = '" + dskId + "'";
+                    "   and sk_dsk_id = '" + dskId + "'" +
+                    "   and sk_frm_id = " + frmId;
             List result = em.createNativeQuery(sql).getResultList();
             for (Iterator iter = result.iterator(); iter.hasNext();)
             {
@@ -93,7 +94,7 @@ public class SkladnikService  {
     }
 
     public Long getDniPrzeprac( BigDecimal prcId, String periodYYYYMM, BigDecimal frmId ){
-        consolidationService.setConsolidateCompanyOnCompany( frmId );
+        //consolidationService.setConsolidateCompanyOnCompany( frmId );
 
         try {
             String sql = "select ek_pck_staze2.dni_abs(" + prcId + ", \n" +
@@ -114,13 +115,19 @@ public class SkladnikService  {
     }
 
     public Long getStawkaPodatkowa( BigDecimal prcId, String periodYYYYMM, BigDecimal frmId ){
-        consolidationService.setConsolidateCompanyOnCompany( frmId );
+        //consolidationService.setConsolidateCompanyOnCompany( frmId );
 
         try {
-            String sql = "select ek_pck_rap_pasek.stawka_podatkowa(" + prcId + ", \n" +
-                    "to_number(substr('" + periodYYYYMM + "',0,4)), \n" +
-                    "to_number(substr('" + periodYYYYMM + "',6,2)) ) \n" +
-                    "from dual ";
+//            String sql = "select ek_pck_rap_pasek.stawka_podatkowa(" + prcId + ", \n" +
+//                    "to_number(substr('" + periodYYYYMM + "',0,4)), \n" +
+//                    "to_number(substr('" + periodYYYYMM + "',6,2)) ) \n" +
+//                    "from dual ";
+
+            String sql = "SELECT dnm_stawka_podatku\n" +
+                    " FROM EK_DANE_MIESIECZNE\n" +
+                    " WHERE dnm_prc_id = " + prcId + "\n" +
+                    " AND dnm_rok = to_number(substr('" + periodYYYYMM + "',0,4))\n" +
+                    " AND dnm_miesiac =  to_number(substr('" + periodYYYYMM + "',6,2))";
 
             List result = em.createNativeQuery(sql).getResultList();
             for (Iterator iter = result.iterator() ; iter.hasNext();)
@@ -135,7 +142,7 @@ public class SkladnikService  {
     }
 
     public Long getLiczbaDniChorob( BigDecimal prcId, String periodYYYYMM, BigDecimal frmId ){
-        consolidationService.setConsolidateCompanyOnCompany( frmId );
+        //consolidationService.setConsolidateCompanyOnCompany( frmId );
 
         try {
 //        String sql = "select nap_rap_pasek.liczba_dni_chorobowego(" + prcId + ", '" + periodYYYYMM + "') wart from dual";

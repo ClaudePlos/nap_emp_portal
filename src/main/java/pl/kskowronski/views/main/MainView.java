@@ -129,7 +129,7 @@ public class MainView extends AppLayout {
             createTab("Paski", PayslipsView.class),
             //createTab("Ocena 360", CardListView.class),
             //createTab("Master-Detail", MasterDetailView.class)
-            createTab("PaskiJS", PayslipsJsView.class),
+            //createTab("PaskiJS", PayslipsJsView.class),
             createTab("About", AboutView.class)
         };
     }
