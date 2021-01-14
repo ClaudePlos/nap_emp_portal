@@ -649,7 +649,7 @@ $F{NIP_F}.substring(9,10)+" "]]></textFieldExpression>
         <band height="802">
             <image>
                 <reportElement x="0" y="1" width="555" height="801" uuid="dee43814-c2e7-4952-9e43-06fc3821d9d7"/>
-                <imageExpression><![CDATA["\\pit-11-26-002.png"]]></imageExpression>
+                <imageExpression><![CDATA["pit-11-26-002.png"]]></imageExpression>
             </image>
             <elementGroup>
                 <textField pattern="" isBlankWhenNull="true">
@@ -1030,7 +1030,7 @@ $F{NIP_F}.substring(9,10)+" "]]></textFieldExpression>
         <band height="802">
             <image>
                 <reportElement x="0" y="0" width="555" height="802" uuid="0e924728-e3f5-4987-9932-5cf7e33c5de8"/>
-                <imageExpression><![CDATA["\\pit-11-26-003.png"]]></imageExpression>
+                <imageExpression><![CDATA["pit-11-26-003.png"]]></imageExpression>
             </image>
             <elementGroup>
                 <textField isBlankWhenNull="true">
@@ -1119,7 +1119,7 @@ $F{NIP_F}.substring(9,10)+" "]]></textFieldExpression>
         <band height="802">
             <image>
                 <reportElement x="0" y="0" width="555" height="802" uuid="c5854fcc-7229-4fcd-b1ca-c04596a2173c"/>
-                <imageExpression><![CDATA["\\pit-11-26-004.png"]]></imageExpression>
+                <imageExpression><![CDATA["pit-11-26-004.png"]]></imageExpression>
             </image>
         </band>
     </detail>
