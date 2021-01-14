@@ -48,7 +48,7 @@ public class ConfirmAcceptDialog extends Dialog {
         LogConfirmAcceptation logConfirmAcceptation =  new LogConfirmAcceptation();
         logConfirmAcceptation.setPrcId(prcId);
         logConfirmAcceptation.setAuditDc(new Date());
-        logConfirmAcceptation.setDescription("Worker confirm accept to use app to get declaration");
+        logConfirmAcceptation.setDescription("Confirm");
         logConfirmAcceptationService.save(logConfirmAcceptation);
     }
 

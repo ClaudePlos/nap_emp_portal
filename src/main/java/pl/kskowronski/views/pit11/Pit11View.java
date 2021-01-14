@@ -109,7 +109,7 @@ public class Pit11View extends VerticalLayout {
                 item -> {
                     try {
                         String path = pit11Service.exportPit11Report("pdf", worker.get().getPassword(), dtYYYY.format(item.getDklDataOd()),  item.getDklXmlVisual());
-                        displayPitPDFonBrowser(path, "Pit11 company:" + item.getDklFrmNazwa() + ", year:" + item.getDklYear());
+                        displayPitPDFonBrowser(path, "Company:" + item.getDklFrmNazwa());
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (JRException e) {
