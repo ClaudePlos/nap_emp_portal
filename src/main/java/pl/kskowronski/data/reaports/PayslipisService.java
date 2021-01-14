@@ -80,6 +80,8 @@ public class PayslipisService {
         File file = new File(PATH + fileName);
         FileOutputStream pdfFileout = new FileOutputStream(file);
 
+        Float etat = 0.0f;
+
         Document document = new Document();
 
         Optional<EatFirma> systemCompany = eatFirmaService.findById(frmId);
@@ -181,6 +183,7 @@ public class PayslipisService {
                 if ( p.getZatrudnienia() != null ){
                     for ( Zatrudnienie zat : p.getZatrudnienia() ){
                         cellNag_2_3.addElement(new Paragraph("Kod tytu\u0142u ubezpieczenia.: " + zat.getDef0() + "       Wymiar: " + zat.getWymiarEtatu().getOpis(), helvFont10));
+                        etat = zat.getWymiarEtatu().getEtat();
                     }
                 }
 
@@ -611,7 +614,10 @@ public class PayslipisService {
                 }
 
                 // get il. day pracownika
-                Long ilDniPrzepracowanych =  0L;//skladnikService.getDniPrzeprac(p.getPrcId(), periodYYYYMM, frmId);
+                Long etatLong =  etat.longValue();
+                Long ilDniPrzepracowanych = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, BigDecimal.valueOf(12465L) , frmId, typeContract).longValue()
+                        / (8L*etatLong);
+                   //skladnikService.getDniPrzeprac(p.getPrcId(), periodYYYYMM, frmId);
                 cellSkladLiczbDniPrzeprac.addElement(new Phrase(" " +ilDniPrzepracowanych.toString(),helvFont10));
 
 
