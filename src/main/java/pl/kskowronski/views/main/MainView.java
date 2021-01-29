@@ -1,5 +1,8 @@
 package pl.kskowronski.views.main;
 
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import com.vaadin.flow.component.Component;
@@ -21,12 +24,16 @@ import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinSession;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.ek.User;
+import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
 import pl.kskowronski.data.entity.log.LogConfirmAcceptation;
 import pl.kskowronski.data.service.egeria.ek.UserService;
+import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
 import pl.kskowronski.data.service.egeria.global.NapUserService;
 import pl.kskowronski.data.service.log.LogConfirmAcceptationService;
 import pl.kskowronski.views.components.ConfirmAcceptDialog;
@@ -47,10 +54,18 @@ public class MainView extends AppLayout {
     private final Tabs menu;
     private H1 viewTitle;
 
+    private VaadinSession session = VaadinSession.getCurrent();
+    private ZatrudnienieService zatrudnienieService;
+    private UserService userService;
+    private MapperDate mapperDate = new MapperDate();
 
+    private User worker;
 
     @Autowired
-    public MainView(UserService userService, NapUserService napUserService, LogConfirmAcceptationService logConfirmAcceptationService) {
+    public MainView(UserService userService, ZatrudnienieService zatrudnienieService
+            , LogConfirmAcceptationService logConfirmAcceptationService) {
+        this.zatrudnienieService = zatrudnienieService;
+        this.userService = userService;
         //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //System.out.println(userDetails.getUsername());
         setPrimarySection(Section.DRAWER);
@@ -58,16 +73,11 @@ public class MainView extends AppLayout {
         menu = createMenu();
         addToDrawer(createDrawerContent(menu));
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<User> worker = userService.findByUsername(userDetails.getUsername());
-        VaadinSession session = VaadinSession.getCurrent();
-        session.setAttribute(User.class, worker.get());
-
         //check user accept to get data, if not then open confirm Dialog
-        Optional<LogConfirmAcceptation> logConfirmAcceptation = logConfirmAcceptationService.findByPrcId(worker.get().getPrcId());
+        Optional<LogConfirmAcceptation> logConfirmAcceptation = logConfirmAcceptationService.findByPrcId(worker.getPrcId());
         if (!logConfirmAcceptation.isPresent()) {
             ConfirmAcceptDialog confirmAcceptDialog = new ConfirmAcceptDialog(logConfirmAcceptationService);
-            confirmAcceptDialog.openConfirmDialog(worker.get().getPrcId());
+            confirmAcceptDialog.openConfirmDialog(worker.getPrcId());
         }
     }
 
@@ -122,16 +132,39 @@ public class MainView extends AppLayout {
     }
 
     private Component[] createMenuItems() {
-        return new Tab[] {
-            createTab("Strona główna", MainPageView.class),
-            createTab("Twój urlop", AllAboutAbsencesView.class),
-            createTab("Pit11", Pit11View.class),
-            createTab("Paski", PayslipsView.class),
-            //createTab("Ocena 360", CardListView.class),
-            //createTab("Master-Detail", MasterDetailView.class)
-            //createTab("PaskiJS", PayslipsJsView.class),
-            createTab("About", AboutView.class)
-        };
+
+        // get info about sing in worker
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> workerOp = userService.findByUsername(userDetails.getUsername());
+        worker = workerOp.get();
+        session.setAttribute(User.class, worker);
+
+        //check actual agreement for worker
+        Optional<List<Zatrudnienie>> listContract = null;
+        try {
+            listContract = zatrudnienieService.getActualContractForWorker(worker.getPrcId(), mapperDate.dtYYYYMM.format(new Date()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if ( listContract.isPresent() && listContract.get().size() > 0 ){
+            return new Tab[] {
+                    createTab("Strona główna", MainPageView.class),
+                    createTab("Twój urlop", AllAboutAbsencesView.class),
+                    createTab("Pit11", Pit11View.class),
+                    createTab("Paski", PayslipsView.class),
+                    //createTab("Ocena 360", CardListView.class),
+                    //createTab("Master-Detail", MasterDetailView.class)
+                    //createTab("PaskiJS", PayslipsJsView.class),
+                    createTab("About", AboutView.class)
+            };
+        } else {
+            return new Tab[] {
+                    createTab("Strona główna", MainPageView.class),
+                    createTab("Pit11", Pit11View.class),
+                    createTab("About", AboutView.class)
+            };
+        }
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {
