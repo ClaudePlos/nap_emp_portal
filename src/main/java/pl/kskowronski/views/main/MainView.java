@@ -156,13 +156,13 @@ public class MainView extends AppLayout {
                     //createTab("Ocena 360", CardListView.class),
                     //createTab("Master-Detail", MasterDetailView.class)
                     //createTab("PaskiJS", PayslipsJsView.class),
-                    createTab("About", AboutView.class)
+                    //createTab("About", AboutView.class)
             };
         } else {
             return new Tab[] {
                     createTab("Strona główna", MainPageView.class),
                     createTab("Pit11", Pit11View.class),
-                    createTab("About", AboutView.class)
+                    //createTab("About", AboutView.class)
             };
         }
     }

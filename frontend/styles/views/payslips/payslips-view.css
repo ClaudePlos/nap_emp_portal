@@ -3,3 +3,9 @@ payslips-view,
   display: block;
   padding: 1em;
 }
+
+.gridFirma {
+  white-space: normal;
+  word-wrap: break-word;
+  width: 145%;
+}

@@ -11,6 +11,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.NativeButtonRenderer;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
@@ -40,7 +41,7 @@ import java.util.Optional;
 
 @Route(value = "payslips", layout = MainView.class)
 @PageTitle("Paski")
-@CssImport("./styles/views/payslips/payslips-view.css")
+@CssImport(value = "./styles/views/payslips/payslips-view.css")
 public class PayslipsView extends VerticalLayout {
 
     private ZatrudnienieService zatrudnienieService;
@@ -66,8 +67,18 @@ public class PayslipsView extends VerticalLayout {
         worker = session.getAttribute(User.class);
 
         this.gridContracts = new Grid<>(Zatrudnienie.class);
-        gridContracts.setColumns("frmNazwa","zatDataPrzyj", "zatDataZmiany", "zatDataDo");
+        gridContracts.setClassName("gridContracts");
+        gridContracts.setColumns();
+        //gridContracts.addColumn("frmNazwa");
+        gridContracts.addColumn(TemplateRenderer.<Zatrudnienie> of(
+                "<div class=\"gridFirma\">[[item.firma]]</div>")
+                .withProperty("firma", Zatrudnienie::getFrmNazwa))
+                .setHeader("Firma");
+        gridContracts.addColumn("zatDataPrzyj").setHeader("Data przyjęcia");
+        gridContracts.addColumn("zatDataZmiany").setHeader("Data zmiany");
+        gridContracts.addColumn("zatDataDo").setHeader("Data do");
         gridContracts.setHeightFull();
+
 
         gridContracts.addColumn(new NativeButtonRenderer<Zatrudnienie>("Pasek",
                 item -> {
