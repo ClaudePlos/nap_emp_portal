@@ -126,15 +126,15 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
         consolidationService.setConsolidateCompanyOnCompany(frmId);
         ListaPlacDTO lP = new ListaPlacDTO();
 
-        String sql = "select distinct lst_numer, to_char(lst_data_obliczen,'MM-YYYY') za_mc, to_char(lst_data_wyplaty,'DD-MM-YYYY')\n" +
-                "from EK_GRUPY_KODOW, ek_skladniki, ek_listy, ek_def_skladnikow \n" +
-                "where sk_dsk_id = dsk_id\n" +
-                "and sk_lst_id = lst_id \n" +
-                "and gk_dsk_id = dsk_id\n" +
-                "and lst_drl_kod = 'LPLAC'\n" +
-                "and sk_prc_id = " + prcId + "\n" +
-                "and sk_Wartosc != 0\n" +
-                "and lst_lst_id_korekta is null\n" +
+        String sql = "select distinct lst_numer, to_char(lst_data_obliczen,'MM-YYYY') za_mc, to_char(lst_data_wyplaty,'DD-MM-YYYY') " +
+                "from EK_GRUPY_KODOW, ek_skladniki, ek_listy, ek_def_skladnikow " +
+                "where sk_dsk_id = dsk_id " +
+                "and sk_lst_id = lst_id " +
+                "and gk_dsk_id = dsk_id " +
+                "and lst_drl_kod = 'LPLAC' " +
+                "and sk_prc_id = " + prcId +
+                "and sk_Wartosc != 0 " +
+                "and lst_lst_id_korekta is null " +
                 "and to_char(lst_data_obliczen,'YYYY-MM') ='"+ mapperDate.dtYYYYMM.format(okres) +"'";
         try{
             Object[] ob = (Object[]) em.createNativeQuery(sql).getSingleResult();
