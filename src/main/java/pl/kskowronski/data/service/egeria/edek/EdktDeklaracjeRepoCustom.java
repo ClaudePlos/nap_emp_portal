@@ -1,4 +1,4 @@
-package pl.kskowronski.data.service.egeria.eDek;
+package pl.kskowronski.data.service.egeria.edek;
 
 
 import org.springframework.transaction.annotation.Transactional;

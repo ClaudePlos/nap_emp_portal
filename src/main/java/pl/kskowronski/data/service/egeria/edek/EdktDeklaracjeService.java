@@ -1,4 +1,4 @@
-package pl.kskowronski.data.service.egeria.eDek;
+package pl.kskowronski.data.service.egeria.edek;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
