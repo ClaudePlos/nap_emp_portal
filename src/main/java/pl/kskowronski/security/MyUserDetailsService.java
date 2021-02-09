@@ -1,7 +1,5 @@
 package pl.kskowronski.security;
 
-import com.vaadin.flow.server.VaadinSession;
-import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,7 +11,6 @@ import pl.kskowronski.data.service.egeria.ek.UserRepo;
 import pl.kskowronski.data.service.egeria.global.NapUserRepo;
 
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
