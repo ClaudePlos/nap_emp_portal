@@ -1,5 +1,6 @@
 package pl.kskowronski.views.login;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
@@ -8,6 +9,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Route("/login")
 @PageTitle("Login | Rekeep")
@@ -26,6 +29,13 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         login.setI18n(createPolandI18n());
 
         add(new H1("Rekeep"), login);
+
+        //for FF
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && !"anonymousUser".equals(auth.getName())) {
+            UI.getCurrent().navigate("Pit11");
+            UI.getCurrent().getPage().reload();
+        }
     }
 
     @Override

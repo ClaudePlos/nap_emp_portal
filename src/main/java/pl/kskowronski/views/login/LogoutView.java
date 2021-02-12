@@ -15,10 +15,11 @@ public class LogoutView extends VerticalLayout {
     public LogoutView() {
         add(new H1("Rekeep logout"));
 
-        VaadinSession.getCurrent().getSession().invalidate();
-        UI.getCurrent().getPage().executeJs("window.location.href='logout'");
-        // Close the session
+        //UI.getCurrent().getPage().executeJs("window.location.href='logout'");
+        // Close the sesWebApplicationContextsion
         UI.getCurrent().getSession().close();
         UI.getCurrent().close();
+        VaadinSession.getCurrent().getSession().invalidate();
+        UI.getCurrent().setPollInterval(3000);
     }
 }

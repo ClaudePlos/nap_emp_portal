@@ -66,8 +66,6 @@ public class MainView extends AppLayout {
             , LogConfirmAcceptationService logConfirmAcceptationService) {
         this.zatrudnienieService = zatrudnienieService;
         this.userService = userService;
-        //UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //System.out.println(userDetails.getUsername());
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
@@ -99,7 +97,6 @@ public class MainView extends AppLayout {
 //                buttonLogOut.getUI().ifPresent(ui ->
 //                        ui.navigate("logout"))
 //        );
-
 
 
         layout.add(new Image("images/user.svg", "Avatar"), logout);
