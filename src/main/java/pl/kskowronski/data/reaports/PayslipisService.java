@@ -614,11 +614,11 @@ public class PayslipisService {
                 }
 
                 // get il. day pracownika
-                Long etatLong =  etat.longValue();
-                Long ilDniPrzepracowanych = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, BigDecimal.valueOf(12465L) , frmId, typeContract).longValue()
-                        / (8L*etatLong);
+                //double etatLong =  etat;
+                double ilDniPrzepracowanych = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, BigDecimal.valueOf(12465L) , frmId, typeContract).longValue()
+                        / (8L*etat);
                    //skladnikService.getDniPrzeprac(p.getPrcId(), periodYYYYMM, frmId);
-                cellSkladLiczbDniPrzeprac.addElement(new Phrase(" " +ilDniPrzepracowanych.toString(),helvFont10));
+                cellSkladLiczbDniPrzeprac.addElement(new Phrase(" " +ilDniPrzepracowanych,helvFont10));
 
 
                 // get stawka podatkowa
