@@ -356,7 +356,7 @@ function generatePaySlipPDF(container, naglowekData, wartKol, zaOkres, imieNazwi
     const docDefinition = doc(tableBody);
     //console.log(docDefinition);
     pdfMake.createPdf(docDefinition).download('file.pdf', function () {
-        alert('your pdf is done');
+        alert('Plik PDF został wygenerowany');
     });
 
 

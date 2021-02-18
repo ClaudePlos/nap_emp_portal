@@ -1,5 +1,6 @@
 package pl.kskowronski.views.pit11;
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -153,9 +154,10 @@ public class Pit11View extends VerticalLayout {
 
         StreamResource res = new StreamResource("file.pdf", () -> new ByteArrayInputStream(pdfBytes));
         Anchor a = new Anchor(res, "kliknij tu by pobrać pit11");
-        a.setTarget( "_blank" ) ;
+        a.setTarget( "_blank" );
+        a.getElement().addEventListener("click", event -> {dialog.close();});
 
-        dialog.add(a, new Button("Zamknij", e -> dialog.close()));
+        dialog.add(a, new Html("<div><br><div>"), new Button("Zamknij", e -> dialog.close()));
         add(dialog);
         dialog.open();
 
