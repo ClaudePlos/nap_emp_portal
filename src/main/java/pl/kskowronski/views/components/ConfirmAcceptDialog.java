@@ -51,5 +51,4 @@ public class ConfirmAcceptDialog extends Dialog {
         logConfirmAcceptationService.save(logConfirmAcceptation);
     }
 
-
 }

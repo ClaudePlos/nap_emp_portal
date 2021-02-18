@@ -82,6 +82,36 @@ public class ZatrudnienieService extends CrudService<Zatrudnienie, BigDecimal> {
         return contracts;
     }
 
+    public Optional<List<Zatrudnienie>> getActualContractUzForWorker(BigDecimal prcId, String period) throws ParseException {
+        //consolidationService.setConsolidateCompany();
+        Date dataOd = dfYYYYMMDD.parse(period + "-01");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dataOd);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH)); //last day month
+        Date dataDo = cal.getTime();
+
+        Optional<List<Zatrudnienie>> contracts = Optional.of(new ArrayList<>());
+        try {
+            contracts = Optional.ofNullable(em.createQuery("select z from Zatrudnienie z where z.zatPrcId = :prcId "
+                    + "and z.zatDataZmiany <= :dataDo and COALESCE(z.zatDataDo, :dataOd) >= :dataOd "
+                    + "and z.zatTypUmowy in (2)")
+                    .setParameter("prcId", prcId)
+                    .setParameter("dataOd", dataOd, TemporalType.DATE)
+                    .setParameter("dataDo", dataDo, TemporalType.DATE)
+                    .getResultList());
+        } catch ( Exception ex ){
+            System.out.println(ex.getMessage());
+        }
+
+        if ( contracts.isPresent() ){
+            contracts.get().stream().forEach( z -> {
+                z.setFrmNazwa(eatFirmaService.findById(z.getFrmId()).get().getFrmNazwa());
+                z.setJoName(joRepo.findById(z.getZatObId()).get().getObNazwa());
+            });
+        }
+        return contracts;
+    }
+
     public List<User> getPracownikZatrudNaSkMc(BigDecimal prcIdForm, String okres, BigDecimal frmId, Long typeContract ){
         //consolidationService.setConsolidateCompanyOnCompany(frmId);
         List<User> listaAktPracNaSk = new ArrayList<User>();
