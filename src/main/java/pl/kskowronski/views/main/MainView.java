@@ -24,7 +24,6 @@ import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinSession;
-import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,14 +33,11 @@ import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
 import pl.kskowronski.data.entity.log.LogConfirmAcceptation;
 import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
-import pl.kskowronski.data.service.egeria.global.NapUserService;
 import pl.kskowronski.data.service.log.LogConfirmAcceptationService;
 import pl.kskowronski.views.components.ConfirmAcceptDialog;
 import pl.kskowronski.views.mainpage.MainPageView;
 import pl.kskowronski.views.absences.AllAboutAbsencesView;
-import pl.kskowronski.views.about.AboutView;
 import pl.kskowronski.views.payslips.PayslipsView;
-import pl.kskowronski.views.payslipsJS.PayslipsJsView;
 import pl.kskowronski.views.payslipscontract.PayslipsContractView;
 import pl.kskowronski.views.pit11.Pit11View;
 
@@ -139,11 +135,14 @@ public class MainView extends AppLayout {
 
         //check actual agreement for worker
         Optional<List<Zatrudnienie>> listContract = null;
+        Optional<List<Zatrudnienie>> listContractUz = null;
         try {
             listContract = zatrudnienieService.getActualContractForWorker(worker.getPrcId(), mapperDate.dtYYYYMM.format(new Date()));
+            listContractUz = zatrudnienieService.getActualContractUzForWorker(worker.getPrcId(), mapperDate.dtYYYYMM.format(new Date()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
 
         if ( listContract.isPresent() && listContract.get().size() > 0 ){
             return new Tab[] {
@@ -157,7 +156,14 @@ public class MainView extends AppLayout {
                     //createTab("PaskiJS", PayslipsJsView.class),
                     //createTab("About", AboutView.class)
             };
-        } else {
+        } else if ( listContractUz.isPresent() && listContractUz.get().size() > 0 ){
+            return new Tab[] {
+                    createTab("Strona główna", MainPageView.class),
+                    createTab("Pit11", Pit11View.class),
+                    createTab("Paski UZ", PayslipsContractView.class),
+            };
+        }
+        else {
             return new Tab[] {
                     createTab("Strona główna", MainPageView.class),
                     createTab("Pit11", Pit11View.class),

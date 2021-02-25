@@ -119,7 +119,7 @@ public class PayslipisService {
 
             List<User> listaAktPracNaSkMc = new ArrayList<>();
             if (prcId != BigDecimal.ZERO){
-                listaAktPracNaSkMc =  zatrudnienieService.getPracownikZatrudNaSkMc(prcId, okres, frmId, Long.parseLong("0")); //  hrPasekServiceBean.getPracownikZatrudNaSkMc();
+                listaAktPracNaSkMc =  zatrudnienieService.getPracownikZatrudNaSkMc(prcId, okres, frmId, typeContract); //  hrPasekServiceBean.getPracownikZatrudNaSkMc();
             } else {
                 //listaAktPracNaSkMc = hrPasekServiceBean.getPracownicyZatrudNaSkMc(skId, okres, frmId, typeContract);
                 System.out.printf("brak dla sk w tej wersji");

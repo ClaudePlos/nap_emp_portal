@@ -41,6 +41,7 @@ public class AbsenceLimitService {
                 " from ek_limity_absencji, ek_limity_dane" +
                 " where ld_la_id=la_id" +
                 " and la_prc_id = " + prcId +
+                " and ld_pozostalo != 0" +
                 " and la_dg_kod in (" + codeHoliday + ")" +
                 " and la_rok = " +  year +
                 " and ld_id = (select max(ld_id) from ek_limity_dane where la_dg_kod = la_dg_kod and ld_la_id=la_id)";

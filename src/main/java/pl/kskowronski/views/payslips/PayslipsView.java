@@ -1,6 +1,7 @@
 package pl.kskowronski.views.payslips;
 
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -185,7 +186,7 @@ public class PayslipsView extends VerticalLayout {
         Anchor a = new Anchor(res, "kliknij tu by pobrać pasek");
         a.setTarget( "_blank" ) ;
 
-        dialog.add(a, new Button("Zamknij", e -> dialog.close()));
+        dialog.add(a, new Html("<div><br><div>"), new Button("Zamknij", e -> dialog.close()));
         add(dialog);
         dialog.open();
     }
