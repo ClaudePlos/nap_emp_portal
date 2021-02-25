@@ -45,9 +45,9 @@ import java.util.Optional;
 @CssImport(value = "./styles/views/payslips/payslips-view.css")
 public class PayslipsContractView extends VerticalLayout {
 
-    private ZatrudnienieService zatrudnienieService;
-    private PayslipisService payslipisService;
-    private MapperDate mapperDate = new MapperDate();
+    private transient ZatrudnienieService zatrudnienieService;
+    private transient PayslipisService payslipisService;
+    private transient MapperDate mapperDate = new MapperDate();
 
     private Grid<Zatrudnienie> gridContracts;
 
@@ -55,7 +55,7 @@ public class PayslipsContractView extends VerticalLayout {
     private Button butMinus = new Button("-");
     private TextField textPeriod = new TextField("Okres");
 
-    private User worker;
+    private transient User worker;
 
 
 
@@ -70,7 +70,6 @@ public class PayslipsContractView extends VerticalLayout {
         this.gridContracts = new Grid<>(Zatrudnienie.class);
         gridContracts.setClassName("gridContracts");
         gridContracts.setColumns();
-        //gridContracts.addColumn("frmNazwa");
         gridContracts.addColumn(TemplateRenderer.<Zatrudnienie> of(
                 "<div class=\"gridFirma\">[[item.firma]]</div>")
                 .withProperty("firma", Zatrudnienie::getFrmNazwa))
@@ -167,12 +166,12 @@ public class PayslipsContractView extends VerticalLayout {
         if (!contracts.isPresent()){
             Notification.show("Brak umów w danym okresie", 3000, Notification.Position.MIDDLE);
         }
-        gridContracts.setItems(contracts.get());
+        if (contracts.isPresent())
+            gridContracts.setItems(contracts.get());
     }
 
     private void GeneratePayslipiPDF(BigDecimal prcId, BigDecimal frmId) throws IOException {
         String path = this.payslipisService.przygotujPaski(null, prcId, textPeriod.getValue(), frmId, Long.parseLong("2"));//0 - full time job, 2 - contract
-        System.out.printf(path);
         displayPayslipsPDFonBrowser(path);
     }
 
