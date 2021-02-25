@@ -184,6 +184,7 @@ public class PayslipsView extends VerticalLayout {
 
         StreamResource res = new StreamResource("file.pdf", () -> new ByteArrayInputStream(pdfBytes));
         Anchor a = new Anchor(res, "kliknij tu by pobrać pasek");
+        a.getElement().addEventListener("click", event -> {dialog.close();});
         a.setTarget( "_blank" ) ;
 
         dialog.add(a, new Html("<div><br><div>"), new Button("Zamknij", e -> dialog.close()));

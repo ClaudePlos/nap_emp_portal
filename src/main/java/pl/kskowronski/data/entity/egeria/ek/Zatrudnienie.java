@@ -122,6 +122,13 @@ public class Zatrudnienie {
     public Zatrudnienie() {
     }
 
+    public boolean isSecondContractOnHours(){
+        if (getZatTypStawki().equals("G") && getZatUbezpObEmeryt().equals("N")){
+            return true;
+        }
+        return false;
+    }
+
     public BigDecimal getZatId() {
         return zatId;
     }

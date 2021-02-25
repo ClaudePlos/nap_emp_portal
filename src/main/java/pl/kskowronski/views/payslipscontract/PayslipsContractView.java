@@ -1,6 +1,7 @@
 package pl.kskowronski.views.payslipscontract;
 
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -77,40 +78,10 @@ public class PayslipsContractView extends VerticalLayout {
         gridContracts.addColumn("zatDataPrzyj").setHeader("Data przyjęcia");
         gridContracts.addColumn("zatDataZmiany").setHeader("Data zmiany");
         gridContracts.addColumn("zatDataDo").setHeader("Data do");
+        gridContracts.addColumn("zatNrUmowy").setHeader("Numer Umowy");
         gridContracts.setHeightFull();
 
-
-        gridContracts.addColumn(new NativeButtonRenderer<Zatrudnienie>("Pasek",
-                item -> {
-                    Date periodNow  = null;
-                    Date periodParam = null;
-                    try {
-                        periodNow = Date.from(LocalDate.now().minus(1, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
-                        periodParam = mapperDate.dtYYYYMM.parse(textPeriod.getValue());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    if ( periodParam.before(periodNow) ) {
-
-                        if (mapperDate.dtYYYYMM.format(periodNow).equals(textPeriod.getValue()) && Long.parseLong(mapperDate.dtDD.format(periodNow)) < 10L){
-                            Notification.show("Pasek jeszcze niedostępny. Pasek za ostatni miesiąc będzie dostępny po 10 danego miesiąca.", 5000, Notification.Position.MIDDLE);
-                            return;
-                        }
-
-                        try {
-                            GeneratePayslipiPDF(item.getZatPrcId(), item.getFrmId());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Notification.show("Pasek jeszcze niedostępny. Pasek za ostatni miesiąc będzie dostępny po 10 danego miesiąca.", 5000, Notification.Position.MIDDLE);
-                    }
-
-                }));
-
-
-
+        gridContracts.addComponentColumn(item -> createButtonPayslipLink(item)).setHeader("");
 
         Date now =  Date.from(LocalDate.now().minus(1, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
         textPeriod.setValue(mapperDate.dtYYYYMM.format(now));
@@ -156,6 +127,41 @@ public class PayslipsContractView extends VerticalLayout {
 
     }
 
+    private Button createButtonPayslipLink(Zatrudnienie item) {
+        @SuppressWarnings("unchecked")
+        Button button = new Button();
+        if (!item.isSecondContractOnHours()){
+            button = new Button("Pasek", clickEvent -> {
+                Date periodNow  = null;
+                Date periodParam = null;
+                try {
+                    periodNow = Date.from(LocalDate.now().minus(1, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    periodParam = mapperDate.dtYYYYMM.parse(textPeriod.getValue());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if ( periodParam.before(periodNow) ) {
+
+                    if (mapperDate.dtYYYYMM.format(periodNow).equals(textPeriod.getValue()) && Long.parseLong(mapperDate.dtDD.format(periodNow)) < 10L){
+                        Notification.show("Pasek jeszcze niedostępny. Pasek za ostatni miesiąc będzie dostępny po 10 danego miesiąca.", 5000, Notification.Position.MIDDLE);
+                        return;
+                    }
+
+                    try {
+                        GeneratePayslipiPDF(item.getZatPrcId(), item.getFrmId());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Notification.show("Pasek jeszcze niedostępny. Pasek za ostatni miesiąc będzie dostępny po 10 danego miesiąca.", 5000, Notification.Position.MIDDLE);
+                }
+            });
+        }
+
+        return button;
+    }
+
     private void getCotractForPeriod() throws ParseException {
         Optional<List<Zatrudnienie>> contracts = zatrudnienieService.getActualContractUzForWorker(worker.getPrcId(), textPeriod.getValue());
         if (!contracts.isPresent()){
@@ -184,6 +190,7 @@ public class PayslipsContractView extends VerticalLayout {
         StreamResource res = new StreamResource("file.pdf", () -> new ByteArrayInputStream(pdfBytes));
         Anchor a = new Anchor(res, "kliknij tu by pobrać pasek");
         a.setTarget( "_blank" ) ;
+        a.getElement().addEventListener("click", event -> {dialog.close();});
 
         dialog.add(a, new Html("<div><br><div>"), new Button("Zamknij", e -> dialog.close()));
         add(dialog);
