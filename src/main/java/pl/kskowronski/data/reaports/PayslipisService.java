@@ -222,7 +222,8 @@ public class PayslipisService {
                 tabSkladniki.setWidths(new int[] {30,8,8,15,8,10,10,10,10,10,40});
 
                 tabSkladniki.addCell(new Paragraph("Naliczenia", helvFont10));
-                tabSkladniki.addCell(new Paragraph("Liczba dni przeprac.", helvFont10));
+                //tabSkladniki.addCell(new Paragraph("Liczba dni przeprac.", helvFont10));
+                tabSkladniki.addCell(new Paragraph("-", helvFont10));
                 tabSkladniki.addCell(new Paragraph("Liczba godz. przeprac.", helvFont10));
                 tabSkladniki.addCell(new Paragraph("Chorobowe ZUS", helvFont10));
                 tabSkladniki.addCell(new Paragraph("Licz. dni wyn. chor.", helvFont10));
@@ -615,10 +616,11 @@ public class PayslipisService {
 
                 // get il. day pracownika
                 //double etatLong =  etat;
-                double ilDniPrzepracowanych = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, BigDecimal.valueOf(12465L) , frmId, typeContract).longValue()
-                        / (8L*etat);
+                //double ilDniPrzepracowanych = skladnikService.getValueFromPayroll( p.getPrcId(), periodYYYYMM, BigDecimal.valueOf(12465L) , frmId, typeContract).longValue()
+                //        / (8L*etat);
                    //skladnikService.getDniPrzeprac(p.getPrcId(), periodYYYYMM, frmId);
-                cellSkladLiczbDniPrzeprac.addElement(new Phrase(" " +ilDniPrzepracowanych,helvFont10));
+                cellSkladLiczbDniPrzeprac.addElement(new Phrase(" " //+ilDniPrzepracowanych
+                        ,helvFont10));
 
 
                 // get stawka podatkowa
