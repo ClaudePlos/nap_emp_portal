@@ -52,11 +52,11 @@ public class MainView extends AppLayout {
     private H1 viewTitle;
 
     private VaadinSession session = VaadinSession.getCurrent();
-    private ZatrudnienieService zatrudnienieService;
-    private UserService userService;
-    private MapperDate mapperDate = new MapperDate();
+    private transient ZatrudnienieService zatrudnienieService;
+    private transient UserService userService;
+    private transient MapperDate mapperDate = new MapperDate();
 
-    private User worker;
+    private transient User worker;
 
     @Autowired
     public MainView(UserService userService, ZatrudnienieService zatrudnienieService
