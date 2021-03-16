@@ -30,7 +30,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         add(new H1("Rekeep"), login);
 
-        //for FF
+        //for Firefox
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && !"anonymousUser".equals(auth.getName())) {
             UI.getCurrent().navigate("Pit11");

@@ -1,13 +1,11 @@
 package pl.kskowronski.views.absences;
 
-import com.vaadin.flow.component.charts.model.Tooltip;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
@@ -16,7 +14,6 @@ import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.ek.AbsenceDTO;
 import pl.kskowronski.data.entity.egeria.ek.AbsenceLimitDTO;
 import pl.kskowronski.data.entity.egeria.ek.User;
-import pl.kskowronski.data.reaports.Pit11Service;
 import pl.kskowronski.data.service.egeria.ek.AbsenceLimitService;
 import pl.kskowronski.data.service.egeria.ek.AbsenceService;
 import pl.kskowronski.views.main.MainView;
@@ -32,12 +29,11 @@ public class AllAboutAbsencesView extends VerticalLayout {
     private Grid<AbsenceLimitDTO> gridAbLimit;
     private Grid<AbsenceDTO> grid;
     NumberField yearField = new NumberField();
-    MapperDate mapperDate = new MapperDate();
-    private User worker;
-    Notification notification = new Notification();
-
-    AbsenceService absenceService;
-    AbsenceLimitService absenceLimitService;
+    transient MapperDate mapperDate = new MapperDate();
+    transient AbsenceService absenceService;
+    transient AbsenceLimitService absenceLimitService;
+    String width130 = "130px";
+    private transient User worker;
 
     public AllAboutAbsencesView(@Autowired AbsenceService absenceService, @Autowired AbsenceLimitService absenceLimitService) throws Exception {
         this.absenceService = absenceService;
@@ -50,7 +46,7 @@ public class AllAboutAbsencesView extends VerticalLayout {
                 = absenceLimitService.findAllAbsenceLimitForPrcIdAndYear(worker.getPrcId()
                 , mapperDate.getCurrentlyYear()
                 , "'A_UR1','UR91','UR31'"); // ,'A_UR11' na zadanie
-        if (listAbsencesLimits.get().size() == 0){
+        if (listAbsencesLimits.isPresent()){
             Notification.show("Brak limitów urlopowych w roku: " + mapperDate.getCurrentlyYear(), 3000, Notification.Position.MIDDLE);
         }
 
@@ -60,11 +56,12 @@ public class AllAboutAbsencesView extends VerticalLayout {
         gridAbLimit.setColumns("nazwaWymiaru", "kodUrlopu", "ldOd", "ldDo", "pozostaloUrlopu", "frmNazwa");
         gridAbLimit.getColumnByKey("nazwaWymiaru").setWidth("200px").setHeader("Nazwa");
         gridAbLimit.getColumnByKey("kodUrlopu").setWidth("80px").setHeader("Kod");
-        gridAbLimit.getColumnByKey("ldOd").setWidth("130px").setHeader("Od");
-        gridAbLimit.getColumnByKey("ldDo").setWidth("130px").setHeader("Do");
+        gridAbLimit.getColumnByKey("ldOd").setWidth(width130).setHeader("Od");
+        gridAbLimit.getColumnByKey("ldDo").setWidth(width130).setHeader("Do");
         gridAbLimit.getColumnByKey("pozostaloUrlopu").setWidth("100px").setHeader("Zostało dni");
         gridAbLimit.getColumnByKey("frmNazwa").setWidth("250px").setHeader("Firma");
-        gridAbLimit.setItems(listAbsencesLimits.get());
+        if (listAbsencesLimits.isPresent())
+            gridAbLimit.setItems(listAbsencesLimits.get());
         gridAbLimit.setHeight("150px");
         add(gridAbLimit);
 
@@ -85,33 +82,30 @@ public class AllAboutAbsencesView extends VerticalLayout {
         });
         add(yearField);
         setHorizontalComponentAlignment(Alignment.START, yearField);
-        //setVerticalComponentAlignment(Alignment.END, yearField);
 
 
 
         this.grid = new Grid<>(AbsenceDTO.class);
         grid.setColumns("abTypeOfAbsence", "abDataOd", "abDataDo", "abDniWykorzystane", "abGodzinyWykorzystane", "abFrmName");
         grid.getColumnByKey("abTypeOfAbsence").setWidth("200px").setHeader("Rodzaj");
-        grid.getColumnByKey("abDataOd").setWidth("130px").setHeader("Data Od");
-        grid.getColumnByKey("abDataDo").setWidth("130px").setHeader("Data Do");
+        grid.getColumnByKey("abDataOd").setWidth(width130).setHeader("Data Od");
+        grid.getColumnByKey("abDataDo").setWidth(width130).setHeader("Data Do");
         grid.getColumnByKey("abDniWykorzystane").setWidth("80px").setHeader("Dni");
         grid.getColumnByKey("abGodzinyWykorzystane").setWidth("80px").setHeader("Godz.");
         grid.getColumnByKey("abFrmName").setWidth("250px").setHeader("Firma");
         onAbsenceChangeYear(String.valueOf(yearField.getValue().intValue()));
         add(grid);
-//        sayHello.addClickListener( e-> {
-//            Notification.show("Hello " + name.getValue());
-//        });
 
         //TODO add eligible days of holiday
     }
 
     private void onAbsenceChangeYear(String year) throws Exception {
         Optional<List<AbsenceDTO>> listAbsences = absenceService.findAllByAbPrcIdForYear(worker.getPrcId(), year);
-        if (listAbsences.get().size() == 0){
+        if (listAbsences.isPresent()){
             Notification.show("Brak absencji w roku: " + year, 3000, Notification.Position.MIDDLE);
         }
-        grid.setItems(listAbsences.get());
+        if (listAbsences.isPresent())
+            grid.setItems(listAbsences.get());
         grid.getDataProvider().refreshAll();
     }
 

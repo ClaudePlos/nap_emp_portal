@@ -20,6 +20,5 @@ public class LogoutView extends VerticalLayout {
         UI.getCurrent().getSession().close();
         UI.getCurrent().close();
         VaadinSession.getCurrent().getSession().invalidate();
-        UI.getCurrent().setPollInterval(3000);
     }
 }
