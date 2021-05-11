@@ -54,7 +54,7 @@ public class PayslipsContractView extends VerticalLayout {
 
     private transient User worker;
 
-
+    private Optional<List<Zatrudnienie>> contracts;
 
     public PayslipsContractView(@Autowired ZatrudnienieService zatrudnienieService, @Autowired PayslipisService payslipisService) throws ParseException {
         setId("payslips-view");
@@ -126,7 +126,7 @@ public class PayslipsContractView extends VerticalLayout {
     private Button createButtonPayslipLink(Zatrudnienie item) {
         @SuppressWarnings("unchecked")
         Button button = new Button();
-        if (!item.isSecondContractOnHours()){
+        if ( !item.isSecondContractOnHours() || contracts.get().size() == 1){
             button = new Button("Pasek", clickEvent -> {
                 Date periodNow  = null;
                 Date periodParam = null;
@@ -159,7 +159,7 @@ public class PayslipsContractView extends VerticalLayout {
     }
 
     private void getCotractForPeriod() throws ParseException {
-        Optional<List<Zatrudnienie>> contracts = zatrudnienieService.getActualContractUzForWorker(worker.getPrcId(), textPeriod.getValue());
+        contracts = zatrudnienieService.getActualContractUzForWorker(worker.getPrcId(), textPeriod.getValue());
         if (!contracts.isPresent()){
             Notification.show("Brak umów w danym okresie", 3000, Notification.Position.MIDDLE);
         }
