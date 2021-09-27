@@ -52,10 +52,9 @@ public class PayslipsView extends VerticalLayout {
 
     private Grid<Zatrudnienie> gridContracts;
 
-    private HorizontalLayout hlPeriod = new HorizontalLayout();
     private Button butPlus = new Button("+");
     private Button butMinus = new Button("-");
-    private TextField textPeriod = new TextField("Okres");
+    private TextField textPeriod = new TextField();
 
     private User worker;
 
@@ -68,6 +67,7 @@ public class PayslipsView extends VerticalLayout {
         this.payslipisService = payslipisService;
         VaadinSession session = VaadinSession.getCurrent();
         worker = session.getAttribute(User.class);
+        textPeriod.setWidth("100px");
 
         this.gridContracts = new Grid<>(Zatrudnienie.class);
         gridContracts.setClassName("gridContracts");
@@ -154,8 +154,7 @@ public class PayslipsView extends VerticalLayout {
             }
         });
 
-        hlPeriod.add(butMinus, textPeriod, butPlus);
-        add(hlPeriod);
+        add(butMinus, textPeriod, butPlus);
 
 
         add(gridContracts);

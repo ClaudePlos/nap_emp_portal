@@ -63,6 +63,7 @@ public class PayslipsContractView extends VerticalLayout {
         this.payslipisService = payslipisService;
         VaadinSession session = VaadinSession.getCurrent();
         worker = session.getAttribute(User.class);
+        textPeriod.setWidth("100px");
 
         this.gridContracts = new Grid<>(Zatrudnienie.class);
         gridContracts.setClassName("gridContracts");
