@@ -46,7 +46,7 @@ public class AllAboutAbsencesView extends VerticalLayout {
                 = absenceLimitService.findAllAbsenceLimitForPrcIdAndYear(worker.getPrcId()
                 , mapperDate.getCurrentlyYear()
                 , "'A_UR1','UR91','UR31'"); // ,'A_UR11' na zadanie
-        if (listAbsencesLimits.isPresent()){
+        if (listAbsencesLimits.get().size() == 0){
             Notification.show("Brak limitów urlopowych w roku: " + mapperDate.getCurrentlyYear(), 3000, Notification.Position.MIDDLE);
         }
 
@@ -101,7 +101,7 @@ public class AllAboutAbsencesView extends VerticalLayout {
 
     private void onAbsenceChangeYear(String year) throws Exception {
         Optional<List<AbsenceDTO>> listAbsences = absenceService.findAllByAbPrcIdForYear(worker.getPrcId(), year);
-        if (listAbsences.isPresent()){
+        if (listAbsences.get().size() == 0) {
             Notification.show("Brak absencji w roku: " + year, 3000, Notification.Position.MIDDLE);
         }
         if (listAbsences.isPresent())

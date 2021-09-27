@@ -9,3 +9,11 @@ payslips-view,
   word-wrap: break-word;
   width: 100%;
 }
+
+.butPlus {
+  width: 2px;
+}
+
+.butMinus {
+  width: 2px;
+}

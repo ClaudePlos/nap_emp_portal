@@ -8,6 +8,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -51,6 +52,7 @@ public class PayslipsView extends VerticalLayout {
 
     private Grid<Zatrudnienie> gridContracts;
 
+    private HorizontalLayout hlPeriod = new HorizontalLayout();
     private Button butPlus = new Button("+");
     private Button butMinus = new Button("-");
     private TextField textPeriod = new TextField("Okres");
@@ -114,9 +116,10 @@ public class PayslipsView extends VerticalLayout {
 
 
         Date now =  Date.from(LocalDate.now().minus(1, ChronoUnit.MONTHS).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        textPeriod.setClassName("textPeriod");
         textPeriod.setValue(mapperDate.dtYYYYMM.format(now));
-        textPeriod.addThemeVariants(TextFieldVariant.LUMO_ALIGN_CENTER);
-        butPlus.setWidth("5px");
+        textPeriod.addThemeVariants(TextFieldVariant.LUMO_ALIGN_CENTER);;
+        butPlus.setClassName("butPlus");
         butPlus.addClickListener(event ->{
             Long mc = Long.parseLong(textPeriod.getValue().substring(textPeriod.getValue().length()-2));
             if ( mc < 12 ){
@@ -133,6 +136,7 @@ public class PayslipsView extends VerticalLayout {
                 e.printStackTrace();
             }
         });
+        butMinus.setClassName("butMinus");
         butMinus.addClickListener(event ->{
             Long mc = Long.parseLong(textPeriod.getValue().substring(textPeriod.getValue().length()-2));
             if ( mc > 1 ){
@@ -149,7 +153,9 @@ public class PayslipsView extends VerticalLayout {
                 e.printStackTrace();
             }
         });
-        add(butMinus, textPeriod, butPlus);
+
+        hlPeriod.add(butMinus, textPeriod, butPlus);
+        add(hlPeriod);
 
 
         add(gridContracts);
