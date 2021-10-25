@@ -378,6 +378,16 @@ public class PayslipisService {
 
                         List<EkSkladnikDTO> listSkladniku = skladnikService.getValueForListComponents(p.getPrcId(), periodYYYYMM, dskIdList, frmId, typeContract);
 
+                        // lacze dwa skladniki 5 i 421 tak by scalić to tylko do dsk: 5
+                        listSkladniku.stream().forEach( skl -> {
+                            if (skl.getDskNazwa().equals("Wyrównanie do minimalnej")) {
+                                listSkladniku.stream()
+                                        .filter( s -> s.getDskNazwa().equals("Płaca zasad. z urlopami pomn. o chorob."))
+                                        .forEach( s -> s.setWartosc( s.getWartosc() + skl.getWartosc()));
+                            }
+                        });
+                        listSkladniku.removeIf( s -> s.getDskNazwa().equals("Wyrównanie do minimalnej") ); // usuniecie skladnika min.wyn
+
                         for ( EkSkladnikDTO s : listSkladniku ){
                             if ( s.getWartosc() != 0 ){
                                 tabSkladNalicz.addCell(new Phrase(s.getDskNazwa(), helvFont10));
