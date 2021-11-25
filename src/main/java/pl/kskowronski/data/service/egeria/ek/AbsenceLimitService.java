@@ -44,7 +44,8 @@ public class AbsenceLimitService {
                 " and ld_pozostalo != 0" +
                 " and la_dg_kod in (" + codeHoliday + ")" +
                 " and la_rok = " +  year +
-                " and ld_id = (select max(ld_id) from ek_limity_dane where la_dg_kod = la_dg_kod and ld_la_id=la_id)";
+                " and ld_id = (select max(ld_id) from ek_limity_dane where la_dg_kod = la_dg_kod and ld_la_id=la_id)" +
+                " and la_frm_id not in (300318, 300311, 300200)"; //marge companies
         Optional<List<Object[]>> results = Optional.ofNullable(em.createNativeQuery(sql).getResultList());
         if (results.isPresent())
         results.get().forEach( item -> listAbLimit.get().add(mapperAbsenceLimit((Object[]) item)));
