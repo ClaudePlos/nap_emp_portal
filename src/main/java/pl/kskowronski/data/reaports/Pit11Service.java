@@ -27,7 +27,7 @@ public class Pit11Service {
 
         //load file and compile it
         ClassLoader cl = this.getClass().getClassLoader();
-        URL url =  cl.getResource("pit11_26.jrxml");
+        URL url =  cl.getResource(getPatternVersion(yearPit));
 
 
         String nameOS = System.getProperty("os.name");
@@ -91,6 +91,16 @@ public class Pit11Service {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private String getPatternVersion( String year ) {
+
+        if (year.equals("2020"))
+            return "pit11/v26/pit11_26.jrxml";
+        if (year.equals("2021"))
+            return "pit11/v27/pit11_27.jrxml";
+        return "-";
+
     }
 
     // If you want from file outside - klaudiusz

@@ -60,7 +60,7 @@ public class PayslipisService {
 
     public String przygotujPaski(Long skId, BigDecimal prcId, String okres, BigDecimal frmId, Long typeContract) throws IOException {
         ClassLoader cl = this.getClass().getClassLoader();
-        URL url =  cl.getResource("pit11_26.jrxml");
+        URL url =  cl.getResource("pit11/v26/pit11_26.jrxml");
         String absolutePath = url.getPath() + "\\";
 
         if (!absolutePath.toUpperCase().substring(1,3).equals("C:")){ //todo better check system operation
