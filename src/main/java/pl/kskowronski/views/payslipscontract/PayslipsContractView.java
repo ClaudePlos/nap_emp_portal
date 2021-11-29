@@ -1,6 +1,7 @@
 package pl.kskowronski.views.payslipscontract;
 
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -8,6 +9,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
@@ -22,6 +24,7 @@ import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
 import pl.kskowronski.data.reaports.PayslipisService;
+import pl.kskowronski.data.service.admin.PdfService;
 import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
 import pl.kskowronski.views.main.MainView;
 
@@ -45,6 +48,7 @@ public class PayslipsContractView extends VerticalLayout {
     private transient ZatrudnienieService zatrudnienieService;
     private transient PayslipisService payslipisService;
     private transient MapperDate mapperDate = new MapperDate();
+    private PdfService pdfService;
 
     private Grid<Zatrudnienie> gridContracts;
 
@@ -56,11 +60,13 @@ public class PayslipsContractView extends VerticalLayout {
 
     private Optional<List<Zatrudnienie>> contracts;
 
-    public PayslipsContractView(@Autowired ZatrudnienieService zatrudnienieService, @Autowired PayslipisService payslipisService) throws ParseException {
+    @Autowired
+    public PayslipsContractView(ZatrudnienieService zatrudnienieService, PayslipisService payslipisService, PdfService pdfService) throws ParseException {
         setId("payslips-view");
         setHeight("80%");
         this.zatrudnienieService = zatrudnienieService;
         this.payslipisService = payslipisService;
+        this.pdfService = pdfService;
         VaadinSession session = VaadinSession.getCurrent();
         worker = session.getAttribute(User.class);
         textPeriod.setWidth("100px");
@@ -125,7 +131,6 @@ public class PayslipsContractView extends VerticalLayout {
     }
 
     private Button createButtonPayslipLink(Zatrudnienie item) {
-        @SuppressWarnings("unchecked")
         Button button = new Button();
         if ( !item.isSecondContractOnHours() || contracts.get().size() == 1){
             button = new Button("Pasek", clickEvent -> {
@@ -185,9 +190,23 @@ public class PayslipsContractView extends VerticalLayout {
         dialog.setHeight("150px");
 
         StreamResource res = new StreamResource("file.pdf", () -> new ByteArrayInputStream(pdfBytes));
+        String reportName = "reportPayslipUz";
         Anchor a = new Anchor(res, "kliknij tu by pobrać pasek");
+        a.setId(reportName);
         a.setTarget( "_blank" ) ;
-        a.getElement().addEventListener("click", event -> {dialog.close();});
+        a.getElement().addEventListener("click", event -> {
+            new Thread(() -> { // asynchronous
+                try {
+                    pdfService.removeFileFromDisk(path);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+            dialog.close();
+        });
+
+        Page page = UI.getCurrent().getPage();
+        page.executeJavaScript("document.getElementById('"+reportName+"').click();");
 
         dialog.add(a, new Html("<div><br><div>"), new Button("Zamknij", e -> dialog.close()));
         add(dialog);

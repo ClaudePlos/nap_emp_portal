@@ -33,6 +33,7 @@ import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.entity.log.LogEvent;
 import pl.kskowronski.data.entity.log.LogPit11;
 import pl.kskowronski.data.reaports.Pit11Service;
+import pl.kskowronski.data.service.admin.PdfService;
 import pl.kskowronski.data.service.egeria.edek.EdktDeklaracjeService;
 import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.data.service.log.LogPit11Service;
@@ -56,6 +57,7 @@ public class Pit11View extends VerticalLayout {
     private UserService userService;
     private EdktDeklaracjeService edktDeklaracjeService;
     private LogPit11Service logPit11Service;
+    private PdfService pdfService;
 
 
     @Autowired
@@ -71,13 +73,14 @@ public class Pit11View extends VerticalLayout {
 
     private Optional<User> worker;
 
-    public Pit11View(@Autowired UserService userService
-            , @Autowired LogPit11Service logPit11Service
-            , @Autowired EdktDeklaracjeService edktDeklaracjeService) {
+    @Autowired
+    public Pit11View( UserService userService, LogPit11Service logPit11Service
+            , EdktDeklaracjeService edktDeklaracjeService, PdfService pdfService) {
         setHeight("85%");
         this.userService = userService;
         this.edktDeklaracjeService = edktDeklaracjeService;
         this.logPit11Service = logPit11Service;
+        this.pdfService = pdfService;
 
         yearField.setLabel("Rok");
         yearField.getElement().setProperty("title", "Test");
@@ -159,15 +162,24 @@ public class Pit11View extends VerticalLayout {
         dialog.setHeight("150px");
 
         StreamResource res = new StreamResource("file.pdf", () -> new ByteArrayInputStream(pdfBytes));
-        String timeStamp = "report12";
+        String reportName = "reportPit11";
         Anchor a = new Anchor(res, "kliknij tu by pobrać pit11");
-        a.setId(timeStamp);
+        a.setId(reportName);
         a.getElement().getStyle().set("display", "none");
         a.setTarget( "_blank" );
-        a.getElement().addEventListener("click", event -> {dialog.close();});
+        a.getElement().addEventListener("click", event -> {
+            new Thread(() -> { // asynchronous
+                try {
+                    pdfService.removeFileFromDisk(path);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+            dialog.close();
+        });
 
         Page page = UI.getCurrent().getPage();
-        page.executeJavaScript("document.getElementById('"+timeStamp+"').click();");
+        page.executeJavaScript("document.getElementById('"+reportName+"').click();");
 
         dialog.add(a, new Html("<div><br><div>"), new Button("Zamknij", e -> dialog.close()));
         add(dialog);
