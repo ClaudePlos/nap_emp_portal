@@ -3,6 +3,7 @@ package pl.kskowronski.views.main;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import com.vaadin.flow.component.Component;
@@ -11,10 +12,7 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -57,6 +55,7 @@ public class MainView extends AppLayout {
     private transient MapperDate mapperDate = new MapperDate();
 
     private transient User worker;
+    private Label labName = new Label();
 
     @Autowired
     public MainView(UserService userService, ZatrudnienieService zatrudnienieService
@@ -95,8 +94,8 @@ public class MainView extends AppLayout {
 //                        ui.navigate("logout"))
 //        );
 
-
-        layout.add(new Image("images/user.svg", "Avatar"), logout);
+        labName.setClassName("labName");
+        layout.add(labName, logout);
         return layout;
     }
 
@@ -132,6 +131,9 @@ public class MainView extends AppLayout {
         Optional<User> workerOp = userService.findByUsername(userDetails.getUsername());
         worker = workerOp.get();
         session.setAttribute(User.class, worker);
+
+        labName.setText(worker.getPrcImie().toUpperCase(Locale.ROOT).substring(0,1));
+        labName.setTitle(worker.getPrcImie() + ' ' + worker.getPrcNazwisko());
 
         //check actual agreement for worker
         Optional<List<Zatrudnienie>> listContract = null;
