@@ -1,6 +1,5 @@
 package pl.kskowronski.data.service.egeria.ek;
 
-import com.vaadin.flow.router.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
@@ -9,10 +8,8 @@ import pl.kskowronski.data.entity.egeria.ek.AbsenceDTO;
 import pl.kskowronski.data.entity.egeria.ek.Absencja;
 import pl.kskowronski.data.entity.egeria.ek.Zwolnienie;
 import pl.kskowronski.data.entity.egeria.global.EatFirma;
-import pl.kskowronski.data.reaports.Pit11Service;
 import pl.kskowronski.data.service.egeria.global.ConsolidationService;
 import pl.kskowronski.data.service.egeria.global.EatFirmaRepo;
-import pl.kskowronski.data.service.egeria.global.EatFirmaService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

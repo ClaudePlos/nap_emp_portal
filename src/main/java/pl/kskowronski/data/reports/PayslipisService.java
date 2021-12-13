@@ -1,4 +1,4 @@
-package pl.kskowronski.data.reaports;
+package pl.kskowronski.data.reports;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

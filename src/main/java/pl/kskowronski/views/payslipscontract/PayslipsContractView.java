@@ -23,7 +23,7 @@ import org.springframework.util.ResourceUtils;
 import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
-import pl.kskowronski.data.reaports.PayslipisService;
+import pl.kskowronski.data.reports.PayslipisService;
 import pl.kskowronski.data.service.admin.PdfService;
 import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
 import pl.kskowronski.views.main.MainView;

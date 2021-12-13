@@ -1,6 +1,5 @@
 package pl.kskowronski.views.payslipsJS;
 
-import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -14,7 +13,6 @@ import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-import elemental.json.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.data.MapperDate;
 import pl.kskowronski.data.entity.egeria.ckk.Client;
@@ -23,7 +21,7 @@ import pl.kskowronski.data.entity.egeria.ek.ListaPlacWartKolumnyDTO;
 import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.entity.egeria.ek.Zatrudnienie;
 import pl.kskowronski.data.entity.egeria.global.EatFirma;
-import pl.kskowronski.data.reaports.PayslipisService;
+import pl.kskowronski.data.reports.PayslipisService;
 import pl.kskowronski.data.service.egeria.ckk.ClientService;
 import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
 import pl.kskowronski.data.service.egeria.global.EatFirmaService;
@@ -41,8 +39,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 
 
 @Route(value = "payslipsJS", layout = MainView.class)

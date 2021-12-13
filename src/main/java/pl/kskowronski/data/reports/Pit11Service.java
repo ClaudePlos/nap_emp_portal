@@ -1,4 +1,4 @@
-package pl.kskowronski.data.reaports;
+package pl.kskowronski.data.reports;
 
 import net.sf.jasperreports.engine.design.JRDesignStyle;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
