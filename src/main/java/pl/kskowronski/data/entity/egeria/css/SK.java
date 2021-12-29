@@ -1,5 +1,7 @@
 package pl.kskowronski.data.entity.egeria.css;
 
+import com.vaadin.flow.component.HasValue;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
