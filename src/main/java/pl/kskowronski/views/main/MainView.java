@@ -38,6 +38,7 @@ import pl.kskowronski.views.absences.AllAboutAbsencesView;
 import pl.kskowronski.views.payslips.PayslipsView;
 import pl.kskowronski.views.payslipscontract.PayslipsContractView;
 import pl.kskowronski.views.pit11.Pit11View;
+import pl.kskowronski.views.pit11list.Pit11listView;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -153,6 +154,7 @@ public class MainView extends AppLayout {
                     createTab("Pit11", Pit11View.class),
                     createTab("Paski", PayslipsView.class),
                     createTab("Paski UZ", PayslipsContractView.class),
+                    createTab("Pit11 (k)", Pit11listView.class),
                     //createTab("Ocena 360", CardListView.class),
                     //createTab("Master-Detail", MasterDetailView.class)
                     //createTab("PaskiJS", PayslipsJsView.class),

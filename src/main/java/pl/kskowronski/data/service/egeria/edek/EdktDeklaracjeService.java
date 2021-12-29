@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.MapperDate;
+import pl.kskowronski.data.entity.egeria.css.SK;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracje;
 import pl.kskowronski.data.entity.egeria.eDek.EdktDeklaracjeDTO;
+import pl.kskowronski.data.entity.egeria.ek.User;
+import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
 import pl.kskowronski.data.service.egeria.global.EatFirmaRepo;
 
 import java.math.BigDecimal;
@@ -23,6 +26,9 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
     @Autowired
     private EatFirmaRepo eatFirmaRepo;
 
+    @Autowired
+    private ZatrudnienieService zatrudnienieService;
+
     public EdktDeklaracjeService(@Autowired EdktDeklaracjeRepo repo) {
         this.repo = repo;
     }
@@ -39,7 +45,7 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
     public Optional<EdktDeklaracje> findByDklId(BigDecimal dklId){
         repo.setConsolidate();
         return repo.findByDklId(dklId);
-    };
+    }
 
     public Optional<List<EdktDeklaracjeDTO>> findAllByDklPrcId(BigDecimal prcId, String year) throws ParseException {
         //repo.setConsolidate();
@@ -50,7 +56,30 @@ public class EdktDeklaracjeService extends CrudService<EdktDeklaracje, BigDecima
             listDek.get().stream().forEach( item -> listDekDTO.get().add( mapperEdktDeklaracje(item)));
         }
         return listDekDTO;
-    };
+    }
+
+    public Optional<List<EdktDeklaracjeDTO>> getListPit11ForSupervisor(String year, BigDecimal skId) throws ParseException {
+        Optional<List<EdktDeklaracjeDTO>> listDekForSK = Optional.of(new ArrayList<>());
+        //repo.setConsolidate();
+        //1. find workers on SK in year
+        List<User> listWorker = zatrudnienieService.getListWorkerOnSKinYear(skId,year);
+        //2. find dek and put
+        listWorker.forEach(item -> {
+            try {
+                Optional<List<EdktDeklaracjeDTO>> listDek = this.findAllByDklPrcId(item.getPrcId(), year);
+                if (listDek.isPresent()) {
+                    listDek.get().forEach(itemDek -> {
+                        itemDek.setDklPrcImie(item.getPrcImie());
+                        itemDek.setDklPrcNazwisko(item.getPrcNazwisko());
+                        listDekForSK.get().add(itemDek);
+                    });
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
+        return listDekForSK;
+    }
 
     private EdktDeklaracjeDTO mapperEdktDeklaracje( EdktDeklaracje dek){
         EdktDeklaracjeDTO dekDTO = new EdktDeklaracjeDTO();

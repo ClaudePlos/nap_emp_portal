@@ -17,6 +17,9 @@ public class EdktDeklaracjeDTO {
     private String dklFrmNazwa;
     private String dklYear;
 
+    private String dklPrcNazwisko;
+    private String dklPrcImie;
+
 
     public BigDecimal getDklId() {
         return dklId;
@@ -96,5 +99,21 @@ public class EdktDeklaracjeDTO {
 
     public void setDklYear(String dklYear) {
         this.dklYear = dklYear;
+    }
+
+    public String getDklPrcNazwisko() {
+        return dklPrcNazwisko;
+    }
+
+    public void setDklPrcNazwisko(String dklPrcNazwisko) {
+        this.dklPrcNazwisko = dklPrcNazwisko;
+    }
+
+    public String getDklPrcImie() {
+        return dklPrcImie;
+    }
+
+    public void setDklPrcImie(String dklPrcImie) {
+        this.dklPrcImie = dklPrcImie;
     }
 }
