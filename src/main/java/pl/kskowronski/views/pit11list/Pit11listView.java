@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Route(value = "Pit11list", layout = MainView.class)
-@PageTitle("Pit11list")
+@PageTitle("Pit11 lista")
 @CssImport("./styles/views/pit11/pit11-view.css")
 public class Pit11listView extends VerticalLayout {
 

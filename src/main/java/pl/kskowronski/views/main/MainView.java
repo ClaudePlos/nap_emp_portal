@@ -32,6 +32,7 @@ import pl.kskowronski.data.entity.log.LogConfirmAcceptation;
 import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.data.service.egeria.ek.ZatrudnienieService;
 import pl.kskowronski.data.service.log.LogConfirmAcceptationService;
+import pl.kskowronski.views.admin.SkForSupervisorView;
 import pl.kskowronski.views.components.ConfirmAcceptDialog;
 import pl.kskowronski.views.mainpage.MainPageView;
 import pl.kskowronski.views.absences.AllAboutAbsencesView;
@@ -155,6 +156,7 @@ public class MainView extends AppLayout {
                     createTab("Paski", PayslipsView.class),
                     createTab("Paski UZ", PayslipsContractView.class),
                     createTab("Pit11 (k)", Pit11listView.class),
+                    createTab("Admin(sk)", SkForSupervisorView.class),
                     //createTab("Ocena 360", CardListView.class),
                     //createTab("Master-Detail", MasterDetailView.class)
                     //createTab("PaskiJS", PayslipsJsView.class),
