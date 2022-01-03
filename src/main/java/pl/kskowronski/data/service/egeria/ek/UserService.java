@@ -6,6 +6,7 @@ import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.entity.egeria.ek.User;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,5 +28,11 @@ public class UserService extends CrudService<User, BigDecimal> {
     public Optional<User> findByUsername(String username){ return repo.findByUsername(username);}
 
     public Optional<User> findByPassword(String pesel){ return repo.findByPassword(pesel);}
+
+    public List<User> findAll(){ return repo.findAll(); }
+
+    public List<User> findByPrcDgKodEk(String dgKod) {
+        return repo.findByPrcDgKodEkOrderByPrcNazwisko(dgKod).get();
+    }
 
 }

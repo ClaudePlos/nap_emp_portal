@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import pl.kskowronski.component.SkForSupervisorDataProvider;
 import pl.kskowronski.data.entity.admin.NppSkForSupervisor;
 import pl.kskowronski.data.entity.egeria.css.SK;
+import pl.kskowronski.data.entity.egeria.ek.User;
 import pl.kskowronski.data.service.admin.NppSkForSupervisorService;
 import pl.kskowronski.data.service.egeria.css.SKService;
+import pl.kskowronski.data.service.egeria.ek.UserService;
 import pl.kskowronski.views.main.MainView;
 
 import java.util.Arrays;
@@ -30,17 +32,19 @@ public class SkForSupervisorView extends Div {
 
     private NppSkForSupervisorService nppSkForSupervisorService;
     private SKService skService;
+    private UserService userService;
 
     private Crud<NppSkForSupervisor> crud;
 
-    private String PRC_NAZWISKO_IMIE = "prcNazwiskoImie";
+    private String PRC_NAZWISKO_IMIE = "nazwImie";
     private String SK_KOD = "skKod";
     private String EDIT_COLUMN = "vaadin-crud-edit-column";
 
     @Autowired
-    public SkForSupervisorView(NppSkForSupervisorService nppSkForSupervisorService, SKService skService) {
+    public SkForSupervisorView(NppSkForSupervisorService nppSkForSupervisorService, SKService skService, UserService userService) {
         this.nppSkForSupervisorService = nppSkForSupervisorService;
         this.skService = skService;
+        this.userService = userService;
         setHeightFull();
         crud = new Crud<>(
                 NppSkForSupervisor.class,
@@ -56,14 +60,14 @@ public class SkForSupervisorView extends Div {
     }
 
     private CrudEditor<NppSkForSupervisor> createEditor() {
-        TextField supervisor = new TextField("Kierownik");
 
+        Select<User> selectUser = getSelectUser();
         Select<SK> selectSkKod = getSelectSK();
 
-        FormLayout form = new FormLayout(supervisor, selectSkKod);
+        FormLayout form = new FormLayout(selectUser, selectSkKod);
 
         Binder<NppSkForSupervisor> binder = new Binder<>(NppSkForSupervisor.class);
-        binder.forField(supervisor).asRequired().bind(NppSkForSupervisor::getPrcNazwiskoImie, NppSkForSupervisor::setPrcNazwiskoImie);
+        binder.forField(selectUser).asRequired().bind(NppSkForSupervisor::getUser, NppSkForSupervisor::setUser);
         binder.forField(selectSkKod).asRequired().bind(NppSkForSupervisor::getSk, NppSkForSupervisor::setSk);
 
 
@@ -95,7 +99,7 @@ public class SkForSupervisorView extends Div {
     }
 
     private void setupDataProvider() {
-        SkForSupervisorDataProvider dataProvider = new SkForSupervisorDataProvider(nppSkForSupervisorService, skService);
+        SkForSupervisorDataProvider dataProvider = new SkForSupervisorDataProvider(nppSkForSupervisorService, skService, userService);
         crud.setDataProvider(dataProvider);
         crud.addDeleteListener(deleteEvent ->
                 dataProvider.delete(deleteEvent.getItem())
@@ -107,8 +111,6 @@ public class SkForSupervisorView extends Div {
 
 
 
-
-
     private Select<SK> getSelectSK() {
         Select<SK> selectSK = new Select<>();
         List<SK> listSK = skService.findAll();
@@ -117,6 +119,16 @@ public class SkForSupervisorView extends Div {
         //selectSK.setEmptySelectionCaption(listSK.get(0).getSkKod());
         selectSK.setLabel("Obiekt");
         return selectSK;
+    }
+
+    private Select<User> getSelectUser() {
+        Select<User> selectUser = new Select<>();
+        List<User> listUser = userService.findByPrcDgKodEk("EK04");
+        selectUser.setItems(listUser);
+        selectUser.setItemLabelGenerator(User::getNazwImie);
+        //selectSK.setEmptySelectionCaption(listSK.get(0).getSkKod());
+        selectUser.setLabel("Kierownik");
+        return selectUser;
     }
 
 }

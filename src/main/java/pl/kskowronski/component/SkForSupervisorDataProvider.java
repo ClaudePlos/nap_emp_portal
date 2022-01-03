@@ -8,6 +8,7 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.SortDirection;
 import pl.kskowronski.data.service.admin.NppSkForSupervisorService;
 import pl.kskowronski.data.service.egeria.css.SKService;
+import pl.kskowronski.data.service.egeria.ek.UserService;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -26,15 +27,14 @@ public class SkForSupervisorDataProvider extends AbstractBackEndDataProvider<Npp
     // A real app should hook up something like JPA
     List<NppSkForSupervisor> DATABASE;
     private NppSkForSupervisorService nppSkForSupervisorService;
-    private SKService skService;
     private Consumer<Long> sizeChangeListener;
 
 
-    public SkForSupervisorDataProvider(NppSkForSupervisorService nppSkForSupervisorService, SKService skService) {
+    public SkForSupervisorDataProvider(NppSkForSupervisorService nppSkForSupervisorService, SKService skService, UserService userService) {
         this.nppSkForSupervisorService = nppSkForSupervisorService;
-        this.skService = skService;
         DATABASE = new ArrayList<>(nppSkForSupervisorService.findAll());
         DATABASE.stream().forEach( item -> {
+            item.setUser(userService.findById(item.getPrcId()).get());
             item.setSk(skService.findBySkKod(item.getSkKod()));
         });
     }

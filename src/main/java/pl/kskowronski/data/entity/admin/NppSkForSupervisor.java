@@ -1,10 +1,10 @@
 package pl.kskowronski.data.entity.admin;
 
 import pl.kskowronski.data.entity.egeria.css.SK;
+import pl.kskowronski.data.entity.egeria.ek.User;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Set;
 
 @Entity
 @Table(name = "npp_sk_for_supervisor")
@@ -21,13 +21,16 @@ public class NppSkForSupervisor {
     private BigDecimal prcId;
 
     @Column(name = "PRC_NAZWISKO_IMIE")
-    private String prcNazwiskoImie;
+    private String nazwImie;
 
     @Column(name = "SK_KOD")
     private String skKod;
 
     @Transient
     private SK sk;
+
+    @Transient
+    private User user;
 
     public NppSkForSupervisor() {
     }
@@ -56,13 +59,14 @@ public class NppSkForSupervisor {
         this.prcId = prcId;
     }
 
-    public String getPrcNazwiskoImie() {
-        return prcNazwiskoImie;
+    public String getNazwImie() {
+        return nazwImie;
     }
 
-    public void setPrcNazwiskoImie(String prcNazwiskoImie) {
-        this.prcNazwiskoImie = prcNazwiskoImie;
+    public void setNazwImie(String nazwImie) {
+        this.nazwImie = nazwImie;
     }
+
     public String getSkKod() {
         return skKod;
     }
@@ -72,12 +76,24 @@ public class NppSkForSupervisor {
     }
 
     public SK getSk() {
-        return this.sk;
+        return sk;
     }
 
     public void setSk(SK sk) {
         this.sk = sk;
         this.skId = sk.getSkId();
         this.skKod = sk.getSkKod();
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        this.prcId = user.getPrcId();
+        if (this.nazwImie == null) {
+            this.nazwImie = user.getNazwImie();
+        }
     }
 }

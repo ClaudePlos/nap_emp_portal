@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import pl.kskowronski.data.entity.egeria.ek.User;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepo extends JpaRepository<User, BigDecimal> {
@@ -15,5 +16,7 @@ public interface UserRepo extends JpaRepository<User, BigDecimal> {
     Optional<User> findByUsername(String username);
 
     Optional<User> findByPassword(String pesel);
+
+    Optional<List<User>> findByPrcDgKodEkOrderByPrcNazwisko(String dgKod);
 
 }
