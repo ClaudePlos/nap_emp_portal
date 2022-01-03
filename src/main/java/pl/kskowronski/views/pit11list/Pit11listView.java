@@ -146,7 +146,7 @@ public class Pit11listView extends VerticalLayout {
     }
 
     private void addSelectSK() {
-        List<SK> listSK = skService.findAll();
+        List<SK> listSK = skService.findSkForSupervisor( worker.get().getPrcId() );
         selectSK.setItems(listSK);
         selectSK.setItemLabelGenerator(SK::getSkKod);
         selectSK.setEmptySelectionCaption(listSK.get(0).getSkKod());

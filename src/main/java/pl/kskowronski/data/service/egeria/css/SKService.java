@@ -4,7 +4,9 @@ package pl.kskowronski.data.service.egeria.css;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
+import pl.kskowronski.data.entity.admin.NppSkForSupervisor;
 import pl.kskowronski.data.entity.egeria.css.SK;
+import pl.kskowronski.data.service.admin.NppSkForSupervisorRepo;
 import pl.kskowronski.data.service.egeria.ckk.ClientRepo;
 
 import java.math.BigDecimal;
@@ -14,6 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class SKService extends CrudService<SK, BigDecimal> {
+
+    @Autowired
+    NppSkForSupervisorRepo nppSkForSupervisorRepo;
 
     private List<SK> list  = new ArrayList<>();
 
@@ -43,5 +48,18 @@ public class SKService extends CrudService<SK, BigDecimal> {
         return list.stream().filter( item -> item.getSkKod().equals(skKod)).collect(Collectors.toList()).get(0);
         //return repo.findAll();
     }
+
+    public List<SK> findSkForSupervisor(BigDecimal prcId){
+        List<SK> listSk = new ArrayList<>();
+        List<NppSkForSupervisor> listSkForSupervisor = nppSkForSupervisorRepo.findSkForSupervisor(prcId);
+        listSkForSupervisor.forEach( item ->{
+            SK sk = new SK();
+            sk.setSkId(item.getSkId());
+            sk.setSkKod(item.getSkKod());
+            listSk.add(sk);
+        });
+        return listSk;
+    }
+
 
 }

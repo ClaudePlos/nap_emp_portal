@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 import pl.kskowronski.data.entity.admin.NppSkForSupervisor;
+import pl.kskowronski.data.entity.egeria.css.SK;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,6 +36,10 @@ public class NppSkForSupervisorService extends CrudService<NppSkForSupervisor, B
 
     public void deleteById(BigDecimal id) {
         repo.deleteById(id);
+    }
+
+    public List<NppSkForSupervisor> findSkForSupervisor(BigDecimal prcId ){
+        return repo.findSkForSupervisor(prcId);
     }
 
 }
