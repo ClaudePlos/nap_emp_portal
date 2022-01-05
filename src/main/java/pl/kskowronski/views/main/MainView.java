@@ -1,10 +1,7 @@
 package pl.kskowronski.views.main;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
@@ -147,9 +144,10 @@ public class MainView extends AppLayout {
             e.printStackTrace();
         }
 
+        Tab[] tabMenu = new Tab[] {};
 
         if ( listContract.isPresent() && listContract.get().size() > 0 ){
-            return new Tab[] {
+            tabMenu = new Tab[] {
                     createTab("Strona główna", MainPageView.class),
                     createTab("Twój urlop", AllAboutAbsencesView.class),
                     createTab("Pit11", Pit11View.class),
@@ -163,19 +161,22 @@ public class MainView extends AppLayout {
                     //createTab("About", AboutView.class)
             };
         } else if ( listContractUz.isPresent() && listContractUz.get().size() > 0 ){
-            return new Tab[] {
+            tabMenu = new Tab[] {
                     createTab("Strona główna", MainPageView.class),
                     createTab("Pit11", Pit11View.class),
                     createTab("Paski UZ", PayslipsContractView.class),
             };
         }
         else {
-            return new Tab[] {
+            tabMenu = new Tab[]  {
                     createTab("Strona główna", MainPageView.class),
                     createTab("Pit11", Pit11View.class),
                     //createTab("About", AboutView.class)
             };
         }
+
+
+        return tabMenu;
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {
